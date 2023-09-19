@@ -1,0 +1,26 @@
+version: '1'
+services:
+  web:
+    build: .
+    ports:
+      - "8080:8080"
+    env_file: .web.env
+    volumes:
+      - "./frontend:/opt/app"
+  server:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file: .server.env
+    depends_on:
+      - db
+    volumes:
+      - "./backend:/opt/app"
+  db:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
