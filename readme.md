@@ -1,5 +1,25 @@
 Skewax is an IDE designed around the PBASIC language and the Parallax Basic microcontroller family. The software tools designed to help develop for these microcontrollers have continually been deprecated, shut down, or become increasingly buggy to the point of uselessness. Skewax aims to create a fully featured and easy to use system to replace all of the outdated systems that currently exist.
 
+# Running Server
+
+Command to start up the entire webserver:
+`docker-compose up`
+
+## Development Environment
+
+`docker-compose.yml` is the file which is used by compose to run the server.
+This compose file is currently a development file. The production compose file is still to be written.
+
+### Required Environment Files
+#### `.db.env`
+requires variables `POSTGRES_USER`, `POSTGRES_PASSWORD`, and `POSTGRES_DB`
+
+#### `.web.env`
+
+#### `.redis.env`
+
+#### `.server.env`
+
 # Tech Stack
 
 - Go

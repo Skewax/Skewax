@@ -1,0 +1,32 @@
+
+
+arr[MAXSIZE];
+
+
+type* stackptr = arr;
+
+
+int a = 5; // stack allocation
+
+int b = 3;
+
+int c= 2;
+
+
+arr = { 0, b, c};
+
+
+
+int* func() {
+  int var = 5;
+  return &var;
+}
+
+
+int main() {
+
+  int* ptr = func();
+
+}
+
+
