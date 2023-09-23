@@ -10,14 +10,69 @@ import (
 	"skewax/graph/model"
 )
 
-// CreateTodo is the resolver for the createTodo field.
-func (r *mutationResolver) CreateTodo(ctx context.Context, input model.NewTodo) (*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: CreateTodo - createTodo"))
+// CreateFile is the resolver for the createFile field.
+func (r *mutationResolver) CreateFile(ctx context.Context, name string, contents string) (*model.File, error) {
+	panic(fmt.Errorf("not implemented: CreateFile - createFile"))
 }
 
-// Todos is the resolver for the todos field.
-func (r *queryResolver) Todos(ctx context.Context) ([]*model.Todo, error) {
-	panic(fmt.Errorf("not implemented: Todos - todos"))
+// UpdateFile is the resolver for the updateFile field.
+func (r *mutationResolver) UpdateFile(ctx context.Context, id string, name string, contents string) (*model.File, error) {
+	panic(fmt.Errorf("not implemented: UpdateFile - updateFile"))
+}
+
+// DeleteFile is the resolver for the deleteFile field.
+func (r *mutationResolver) DeleteFile(ctx context.Context, id string) (*model.File, error) {
+	panic(fmt.Errorf("not implemented: DeleteFile - deleteFile"))
+}
+
+// CreateDirectory is the resolver for the createDirectory field.
+func (r *mutationResolver) CreateDirectory(ctx context.Context, name string, parentDirectory string) (*model.Directory, error) {
+	panic(fmt.Errorf("not implemented: CreateDirectory - createDirectory"))
+}
+
+// DeleteDirectory is the resolver for the deleteDirectory field.
+func (r *mutationResolver) DeleteDirectory(ctx context.Context, id string) (*model.Directory, error) {
+	panic(fmt.Errorf("not implemented: DeleteDirectory - deleteDirectory"))
+}
+
+// RenameDirectory is the resolver for the renameDirectory field.
+func (r *mutationResolver) RenameDirectory(ctx context.Context, id string, name string) (*model.Directory, error) {
+	panic(fmt.Errorf("not implemented: RenameDirectory - renameDirectory"))
+}
+
+// RenameFile is the resolver for the renameFile field.
+func (r *mutationResolver) RenameFile(ctx context.Context, id string, name string) (*model.File, error) {
+	panic(fmt.Errorf("not implemented: RenameFile - renameFile"))
+}
+
+// MoveFile is the resolver for the moveFile field.
+func (r *mutationResolver) MoveFile(ctx context.Context, id string, directoryID string) (*model.File, error) {
+	panic(fmt.Errorf("not implemented: MoveFile - moveFile"))
+}
+
+// MoveDirectory is the resolver for the moveDirectory field.
+func (r *mutationResolver) MoveDirectory(ctx context.Context, id string, directoryID string) (*model.Directory, error) {
+	panic(fmt.Errorf("not implemented: MoveDirectory - moveDirectory"))
+}
+
+// Me is the resolver for the me field.
+func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
+	panic(fmt.Errorf("not implemented: Me - me"))
+}
+
+// BaseDirectory is the resolver for the baseDirectory field.
+func (r *queryResolver) BaseDirectory(ctx context.Context) (*model.Directory, error) {
+	panic(fmt.Errorf("not implemented: BaseDirectory - baseDirectory"))
+}
+
+// Directory is the resolver for the directory field.
+func (r *queryResolver) Directory(ctx context.Context, id string) (*model.Directory, error) {
+	panic(fmt.Errorf("not implemented: Directory - directory"))
+}
+
+// File is the resolver for the file field.
+func (r *queryResolver) File(ctx context.Context, id string) (*model.File, error) {
+	panic(fmt.Errorf("not implemented: File - file"))
 }
 
 // Mutation returns MutationResolver implementation.
