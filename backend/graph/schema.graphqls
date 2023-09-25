@@ -1,0 +1,50 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+scalar DateTime
+
+type User {
+  id: ID!
+  name: String!
+  image: String!
+  email: String!
+}
+
+type File {
+  id: ID!
+  name: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  isPBASIC: Boolean!
+  writable: Boolean!
+  contents: String!
+}
+
+type Directory {
+  name: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  id: ID!
+  files: [File!]!
+  directories: [Directory!]!
+}
+
+type Query {
+  me: User
+  baseDirectory: Directory!
+  directory(id: ID!): Directory
+  file(id: ID!): File
+}
+
+type Mutation {
+  createFile(name: String!, contents: String!): File!
+  updateFile(id: ID!, name: String!, contents: String!): File!
+  deleteFile(id: ID!): File!
+  createDirectory(name: String!, parentDirectory: ID!): Directory!
+  deleteDirectory(id: ID!): Directory!
+  renameDirectory(id: ID!, name: String!): Directory!
+  renameFile(id: ID!, name: String!): File!
+  moveFile(id: ID!, directoryId: ID!): File!
+  moveDirectory(id: ID!, directoryId: ID!): Directory!
+}
