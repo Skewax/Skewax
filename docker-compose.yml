@@ -10,7 +10,8 @@ services:
       - 8080:8080
     command: "npm run dev"
   server:
-    build: ./backend
+    image: "cosmtrek/air"
+    working_dir: /opt/app
     ports:
       - 8000:8000
     env_file: .server.env
