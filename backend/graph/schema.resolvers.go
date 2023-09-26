@@ -57,7 +57,12 @@ func (r *mutationResolver) MoveDirectory(ctx context.Context, id string, directo
 
 // Me is the resolver for the me field.
 func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
-	panic(fmt.Errorf("not implemented: Me - me"))
+	return &model.User{
+		ID:    "1",
+		Name:  "Test User",
+		Image: "https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50",
+		Email: "test",
+	}, nil
 }
 
 // BaseDirectory is the resolver for the baseDirectory field.
