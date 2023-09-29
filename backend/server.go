@@ -1,4 +1,4 @@
-package main
+package backend
 
 import (
 	"log"
@@ -20,6 +20,7 @@ func main() {
 
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
 
+	initDB()
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)
 
