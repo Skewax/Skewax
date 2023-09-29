@@ -19,7 +19,7 @@ services:
       - db
       - redis
     volumes:
-      - ./backend:/opt/app/
+      - ./backend:/opt/app
   db:
     image: postgres:latest
     env_file: .db.env
