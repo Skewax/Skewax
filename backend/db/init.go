@@ -1,4 +1,4 @@
-package backend
+package db
 
 import (
 	"time"
@@ -15,7 +15,7 @@ type AuthUser struct {
 	RefreshTokenExpiry *time.Time
 }
 
-func initDB() {
+func InitDB() *gorm.DB {
 	dsn := "host=db user=admin password=pass dbname=skewax port=5432 sslmode=disable"
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
@@ -24,5 +24,5 @@ func initDB() {
 	}
 
 	db.AutoMigrate(&AuthUser{})
-
+	return db
 }

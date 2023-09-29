@@ -7,6 +7,7 @@ package graph
 import (
 	"context"
 	"fmt"
+	"skewax/db"
 	"skewax/graph/model"
 )
 
@@ -57,9 +58,11 @@ func (r *mutationResolver) MoveDirectory(ctx context.Context, id string, directo
 
 // Me is the resolver for the me field.
 func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
+	var user db.AuthUser
+	r.DB.First(&user)
 	return &model.User{
 		ID:    "1",
-		Name:  "Test User",
+		Name:  user.AccessToken,
 		Image: "https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50",
 		Email: "test",
 	}, nil
