@@ -30,4 +30,3 @@ services:
     env_file: .redis.env
     ports:
       - 6379:6379
-

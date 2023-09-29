@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"skewax/db"
 	"skewax/graph"
 
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -18,7 +19,10 @@ func main() {
 		port = defaultPort
 	}
 
-	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{}}))
+	orm := db.InitDB()
+	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
+		DB: orm,
+	}}))
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)

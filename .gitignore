@@ -1,4 +1,5 @@
 *.env
+backend/tmp
 # VSCode
 .vscode/*
 !.vscode/settings.json
@@ -9,3 +10,4 @@
 # Local History for Visual Studio Code
 .history/
 frontend/node_modules
+**/.DS_Store
