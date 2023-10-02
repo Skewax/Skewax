@@ -3,7 +3,7 @@ import { createContext, useContext, useState } from "react"
 const gapiConfig = {
   scope: 'https://www.googleapis.com/auth/drive.file',
   discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
-  clientId: '322293244084-ia0sb80g7kakes38jkbibprno239tcl6.apps.googleusercontent.com'
+  clientId: '1085983367599-5527f55859r5mufahtfe5nso9s0sf9lq.apps.googleusercontent.com'
 };
 
 interface AuthContext {
@@ -28,10 +28,9 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const gsi = window.google.accounts.oauth2.initCodeClient({
     client_id: gapiConfig.clientId,
+    ux_mode: 'redirect',
     scope: gapiConfig.scope,
-    callback: (codeResponse) => {
-      console.log(codeResponse)
-    }
+    redirect_uri: 'http://localhost:8000/signin',
   })
 
   console.log(token)

@@ -5,7 +5,6 @@ import { ThemeProvider, createTheme, useMediaQuery } from '@mui/material'
 import { EditorPage } from './pages/EditorPage'
 import ReactDOM from 'react-dom/client'
 import { AuthProvider } from './contexts/useAuth'
-import { GoogleApiProvider } from 'react-gapi/dist/types/GoogleApiProvider'
 
 const router = createBrowserRouter([
   {

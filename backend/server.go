@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"skewax/db"
+	"skewax/google"
 	"skewax/graph"
 
 	"github.com/99designs/gqlgen/graphql/handler"
@@ -26,6 +27,7 @@ func main() {
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)
+	http.HandleFunc("/signin", google.ServeLoginEndpoint)
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
