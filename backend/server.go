@@ -27,9 +27,11 @@ func main() {
 		port = defaultPort
 	}
 
+	origins := strings.Split(os.Getenv("CORS_ORIGINS"), ",")
+
 	router := chi.NewRouter()
 	router.Use(cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:8080", "http://localhost:8000"},
+		AllowedOrigins:   origins,
 		AllowCredentials: true,
 	}).Handler)
 

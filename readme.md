@@ -19,6 +19,20 @@ requires variables `POSTGRES_USER`, `POSTGRES_PASSWORD`, and `POSTGRES_DB`
 #### `.redis.env`
 
 #### `.server.env`
+requires variables: 
+- REDIRECT_URI
+- GOOGLE_OAUTH_CLIENT_ID
+- GOOGLE_OAUTH_CLIENT_SECRET
+- GOOGLE_OAUTH_SCOPES
+- GOOGLE_REDIRECT_URI
+- DB_HOST
+- DB_PORT
+- DB_NAME
+- DB_USER
+- DB_PASSWORD
+- JWT_KEY
+- ALLOWED_ORIGINS
+
 
 # Tech Stack
 
