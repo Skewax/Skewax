@@ -1,6 +1,8 @@
 package db
 
 import (
+	"fmt"
+	"os"
 	"time"
 
 	"gorm.io/driver/postgres"
@@ -23,7 +25,13 @@ type SessionToken struct {
 }
 
 func InitDB() *gorm.DB {
-	dsn := "host=db user=admin password=password dbname=skewax port=5432 sslmode=disable"
+	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
+		os.Getenv("DB_HOST"),
+		os.Getenv("DB_USER"),
+		os.Getenv("DB_PASSWORD"),
+		os.Getenv("DB_NAME"),
+		os.Getenv("DB_PORT"),
+	)
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 
 	if err != nil {

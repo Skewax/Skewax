@@ -4,7 +4,10 @@ go 1.20
 
 require (
 	github.com/99designs/gqlgen v0.17.38
+	github.com/go-chi/chi/v5 v5.0.10
+	github.com/rs/cors v1.10.1
 	github.com/vektah/gqlparser/v2 v2.5.10
+	golang.org/x/oauth2 v0.12.0
 	gorm.io/driver/postgres v1.5.2
 )
 
@@ -24,7 +27,6 @@ require (
 	go.opencensus.io v0.24.0 // indirect
 	golang.org/x/crypto v0.13.0 // indirect
 	golang.org/x/net v0.15.0 // indirect
-	golang.org/x/oauth2 v0.12.0
 	golang.org/x/sys v0.12.0 // indirect
 	golang.org/x/text v0.13.0 // indirect
 	google.golang.org/appengine v1.6.7 // indirect

@@ -38,8 +38,8 @@ func main() {
 		DB: orm,
 	}}))
 
-	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	http.Handle("/query", srv)
+	router.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	router.Handle("/query", srv)
 	googleProvider := google.NewGoogleProvider(&oauth2.Config{
 		ClientID:     os.Getenv("GOOGLE_OAUTH_CLIENT_ID"),
 		ClientSecret: os.Getenv("GOOGLE_OAUTH_CLIENT_SECRET"),
@@ -52,7 +52,7 @@ func main() {
 		Google: googleProvider,
 		DB:     orm,
 	}
-	http.Handle("/signin", srvLogin)
+	router.Handle("/signin", srvLogin)
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
 	log.Fatal(http.ListenAndServe(":"+port, router))
