@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -18,7 +19,7 @@ type AuthUser struct {
 
 type SessionToken struct {
 	gorm.Model
-	ID         string
+	ID         uuid.UUID `gorm:"type:uuid;default:gen_random_uuid()"`
 	Expiry     *time.Time
 	AuthUserID string
 	AuthUser   AuthUser
