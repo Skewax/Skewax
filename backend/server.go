@@ -1,4 +1,4 @@
-package backend
+package main
 
 import (
 	"log"
@@ -28,7 +28,6 @@ func main() {
 		DB: orm,
 	}}))
 
-	// initDB()
 	http.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	http.Handle("/query", srv)
 	googleProvider := google.NewGoogleProvider(&oauth2.Config{
