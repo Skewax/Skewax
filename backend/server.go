@@ -9,6 +9,9 @@ import (
 	"skewax/graph"
 	"strings"
 
+	"github.com/go-chi/chi/v5"
+	"github.com/rs/cors"
+
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"golang.org/x/oauth2"
@@ -22,6 +25,13 @@ func main() {
 	if port == "" {
 		port = defaultPort
 	}
+
+	router := chi.NewRouter()
+	router.Use(cors.New(cors.Options{
+		AllowedOrigins:   []string{"http://localhost:8080", "http://localhost:8000"},
+		AllowCredentials: true,
+		Debug:            true,
+	}).Handler)
 
 	orm := db.InitDB()
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
@@ -45,5 +55,5 @@ func main() {
 	http.Handle("/signin", srvLogin)
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	log.Fatal(http.ListenAndServe(":"+port, router))
 }

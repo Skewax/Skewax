@@ -20,7 +20,7 @@ const Sidebar = () => {
       }}
     >
       <Toolbar />
-      hi
+      hii
     </Drawer>
   )
 }
