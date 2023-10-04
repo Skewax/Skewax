@@ -22,18 +22,13 @@ const AuthContext = createContext<AuthContext>({} as any)
 
 const useAuth = () => useContext(AuthContext)
 
+const gsi = window.google.accounts.oauth2.initCodeClient({
+  client_id: gapiConfig.clientId,
+  ux_mode: 'redirect',
+  scope: gapiConfig.scope,
+  redirect_uri: 'http://localhost:8000/signin',
+})
 const AuthProvider = ({ children }: AuthProviderProps) => {
-
-  const [token, setToken] = useState<string | null>(null)
-
-  const gsi = window.google.accounts.oauth2.initCodeClient({
-    client_id: gapiConfig.clientId,
-    ux_mode: 'redirect',
-    scope: gapiConfig.scope,
-    redirect_uri: 'http://localhost:8000/signin',
-  })
-
-  console.log(token)
 
   return (
     <AuthContext.Provider value={{
