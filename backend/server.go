@@ -4,6 +4,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"skewax/auth"
 	"skewax/db"
 	"skewax/google"
 	"skewax/graph"
@@ -33,6 +34,8 @@ func main() {
 	}).Handler)
 
 	orm := db.InitDB()
+	router.Use(auth.Middleware(orm))
+
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
 		DB: orm,
 	}}))

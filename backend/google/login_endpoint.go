@@ -4,9 +4,12 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"skewax/auth"
 	"skewax/db"
 	"strings"
+	"time"
 
+	_ "github.com/golang-jwt/jwt/v5"
 	"gorm.io/gorm"
 )
 
@@ -68,8 +71,16 @@ func (h *LoginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		RefreshToken:      token.RefreshToken,
 	}})
 
-	//generate jwt
+	//generate jwt and refresh token
+	sessionExpiry := time.Now().Add(time.Hour * 24 * 7)
+	SessionTokenObj := db.SessionToken{
+		AuthUserID: info.Id,
+		Expiry:     &sessionExpiry,
+	}
+	h.DB.Create(&SessionTokenObj)
+	userToken, err := auth.GenerateJWT(info.Id)
 
 	//redirect to frontend with jwt
+	http.Redirect(w, r, redirect+"?token="+userToken+"&session="+SessionTokenObj.ID.String(), http.StatusFound)
 
 }
