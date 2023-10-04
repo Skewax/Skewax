@@ -5,7 +5,6 @@ import { ThemeProvider, createTheme, useMediaQuery } from '@mui/material'
 import { EditorPage } from './pages/EditorPage'
 import ReactDOM from 'react-dom/client'
 import { AuthProvider } from './contexts/useAuth'
-import { GoogleApiProvider } from 'react-gapi/dist/types/GoogleApiProvider'
 import { ApolloClient, InMemoryCache, ApolloProvider, useQuery, gql, HttpLink } from "@apollo/client";
 
 const router = createBrowserRouter([
@@ -20,7 +19,7 @@ const router = createBrowserRouter([
 ])
 
 const client = new ApolloClient({
-  uri: 'http://localhost:8000/query', 
+  uri: 'http://localhost:8000/query',
   cache: new InMemoryCache(),
 
 });
@@ -32,11 +31,11 @@ const App = () => {
 
   return (
     <ApolloProvider client={client}>
-    <ThemeProvider theme={theme}>
-      <AuthProvider>
-        <RouterProvider router={router} />
-      </AuthProvider>
-    </ThemeProvider>
+      <ThemeProvider theme={theme}>
+        <AuthProvider>
+          <RouterProvider router={router} />
+        </AuthProvider>
+      </ThemeProvider>
     </ApolloProvider>
   )
 }
