@@ -5,6 +5,11 @@ import { ThemeProvider, createTheme, useMediaQuery } from '@mui/material'
 import { EditorPage } from './pages/EditorPage'
 import ReactDOM from 'react-dom/client'
 import { AuthProvider } from './contexts/useAuth'
+<<<<<<< HEAD
+=======
+import { GoogleApiProvider } from 'react-gapi/dist/types/GoogleApiProvider'
+import { ApolloClient, InMemoryCache, ApolloProvider, useQuery, gql } from "@apollo/client";
+>>>>>>> 043c435 (pre merging from main)
 
 const router = createBrowserRouter([
   {
@@ -36,3 +41,11 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <App />
   </React.StrictMode >,
 )
+
+const client = new ApolloClient({
+	uri: "localhost:8000", cache: new InMemoryCache()
+});
+
+<ApolloProvider client={client}>
+	<App/>
+</ApolloProvider>

@@ -69,14 +69,17 @@ const Navbar = () => {
                             <Button fullWidth onClick={signOut}>Sign Out</Button>
                           </Box>
                         }
-                        <Button fullWidth onClick={async () => {
-                          console.log(window.gapi.client.getToken())
+                        <Button fullWidth onClick={() => {
+                          console.log("hello world");
+						  
+						  
+						  
                           // const res = await window.gapi.client.drive?.files.list({
                           //   pageSize: 10,
                           //   fields: 'nextPageToken, files(id, name)',
                           // })
                           // console.log(res)
-                        }}>test</Button>
+                        }}>feest</Button>
                       </Stack>
                     </Box>
                   </Popover>
