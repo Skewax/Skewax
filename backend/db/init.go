@@ -8,11 +8,18 @@ import (
 )
 
 type AuthUser struct {
-	ID                 string
-	AccessToken        string
-	AccessTokenExpiry  *time.Time
-	RefreshToken       string
-	RefreshTokenExpiry *time.Time
+	ID                string
+	AccessToken       string
+	AccessTokenExpiry *time.Time
+	RefreshToken      string
+}
+
+type SessionToken struct {
+	gorm.Model
+	ID         string
+	Expiry     *time.Time
+	AuthUserID string
+	AuthUser   AuthUser
 }
 
 func InitDB() *gorm.DB {
@@ -23,6 +30,6 @@ func InitDB() *gorm.DB {
 		panic("failed to connect database")
 	}
 
-	db.AutoMigrate(&AuthUser{})
+	db.AutoMigrate(&AuthUser{}, &SessionToken{})
 	return db
 }
