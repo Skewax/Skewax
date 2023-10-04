@@ -11,4 +11,3 @@ backend/tmp
 .history/
 frontend/node_modules
 **/.DS_Store
-scratchpad
