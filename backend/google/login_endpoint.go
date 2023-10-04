@@ -1,7 +1,6 @@
 package google
 
 import (
-	"fmt"
 	"net/http"
 	"os"
 	"skewax/auth"
@@ -45,7 +44,6 @@ func (h *LoginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	token, err := h.Google.ExchangeCode(params.Get("code"))
 	if err != nil {
 		//redirect to frontend with error
-		fmt.Print(fmt.Errorf("Unable to create service: %v\n", err))
 		http.Redirect(w, r, redirect+"?error=invalid_code", http.StatusInternalServerError)
 		return
 	}
