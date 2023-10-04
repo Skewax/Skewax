@@ -30,7 +30,6 @@ func main() {
 	router.Use(cors.New(cors.Options{
 		AllowedOrigins:   []string{"http://localhost:8080", "http://localhost:8000"},
 		AllowCredentials: true,
-		Debug:            true,
 	}).Handler)
 
 	orm := db.InitDB()
