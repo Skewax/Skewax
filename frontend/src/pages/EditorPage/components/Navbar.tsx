@@ -6,31 +6,33 @@ import useIsDarkMode from "../../../hooks/useIsDarkMode"
 import Searchbar from "./Searchbar"
 import { useAuth } from "../../../contexts/useAuth"
 import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state"
-import {gql, useLazyQuery} from "@apollo/client"
+import { useLazyQuery } from "@apollo/client"
 import { useEffect } from "react"
+import { gql } from "../../../__generated__"
 
-const test_query=gql`
+const test_query = gql(`
 query TestQuery {
   me {
     id
+    email
   }
 }
-`;
+`)
 
 const Navbar = () => {
   const isDark = useIsDarkMode()
 
   const { signIn, isSignedIn, user, signOut } = useAuth()
 
-  const [requestIGuess, {data, error, loading}]=useLazyQuery(test_query);
+  const [requestIGuess, { data, error, loading }] = useLazyQuery(test_query);
 
   useEffect(() => {
-    if(!loading) {
-    console.log(data)
-    console.log(error)
+    if (!loading) {
+      console.log(data)
+      console.log(error)
     }
   }, [loading])
-  
+
 
   return (
     <PopupState variant='popover' popupId='navbar-popup'>
@@ -90,7 +92,7 @@ const Navbar = () => {
                         }
                         <Button fullWidth onClick={async () => {
                           console.log(window.gapi.client.getToken())
-                          
+
                           requestIGuess()
 
 
