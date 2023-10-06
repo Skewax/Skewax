@@ -31,7 +31,7 @@ type Directory {
 }
 
 type Query {
-  me: User
+  me: User!
   baseDirectory: Directory!
   directory(id: ID!): Directory
   file(id: ID!): File

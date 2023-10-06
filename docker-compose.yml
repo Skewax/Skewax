@@ -6,6 +6,7 @@ services:
     env_file: .web.env
     volumes:
       - ./frontend:/opt/app
+      - ./shared:/opt/shared
     ports:
       - 8080:8080
     command: "npm run dev"
@@ -20,6 +21,7 @@ services:
       - redis
     volumes:
       - ./backend:/opt/app
+      - ./shared:/opt/shared
   db:
     image: postgres:latest
     env_file: .db.env
