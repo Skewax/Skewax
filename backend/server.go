@@ -58,6 +58,11 @@ func main() {
 	}
 	router.Handle("/signin", srvLogin)
 
+	srvExchange := &auth.ExhangeHandler{
+		DB: orm,
+	}
+	router.Handle("/exchange", srvExchange)
+
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
 	log.Fatal(http.ListenAndServe(":"+port, router))
 }
