@@ -36,14 +36,14 @@ func main() {
 	}).Handler)
 
 	orm := db.InitDB()
-	router.Use(auth.Middleware(orm))
+	authMiddleware := auth.Middleware(orm)
 
 	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
 		DB: orm,
 	}}))
 
 	router.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	router.Handle("/query", srv)
+	router.Handle("/query", authMiddleware(srv))
 	googleProvider := google.NewGoogleProvider(&oauth2.Config{
 		ClientID:     os.Getenv("GOOGLE_OAUTH_CLIENT_ID"),
 		ClientSecret: os.Getenv("GOOGLE_OAUTH_CLIENT_SECRET"),
