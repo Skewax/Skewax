@@ -17,9 +17,12 @@ type LoginHandler struct {
 	DB     *gorm.DB
 }
 
+var (
+	redirect = os.Getenv("REDIRECT_URI")
+)
+
 func (h *LoginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	params := r.URL.Query()
-	redirect := os.Getenv("REDIRECT_URI")
 
 	//validate request
 
@@ -36,7 +39,7 @@ func (h *LoginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	if len(overlap) != len(neededScopes) {
 		//redirect to frontend with error
-		http.Redirect(w, r, redirect+"?error=invalid_scope", http.StatusUnauthorized)
+		http.Redirect(w, r, redirect+"?error=scope_error", http.StatusUnauthorized)
 		return
 	}
 
@@ -44,19 +47,19 @@ func (h *LoginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	token, err := h.Google.ExchangeCode(params.Get("code"))
 	if err != nil {
 		//redirect to frontend with error
-		http.Redirect(w, r, redirect+"?error=invalid_code", http.StatusInternalServerError)
+		http.Redirect(w, r, redirect+"?error=code_error", http.StatusInternalServerError)
 		return
 	}
 
 	//get user info from google
 	service, err := h.Google.Service(token)
 	if err != nil {
-		http.Redirect(w, r, redirect+"?error=invalid_token", http.StatusInternalServerError)
+		http.Redirect(w, r, redirect+"?error=token_error", http.StatusInternalServerError)
 		return
 	}
 	info, err := service.Userinfo.Get().Do()
 	if err != nil {
-		http.Redirect(w, r, redirect+"?error=invalid_user", http.StatusBadRequest)
+		http.Redirect(w, r, redirect+"?error=user_error", http.StatusBadRequest)
 		return
 	}
 
@@ -77,7 +80,10 @@ func (h *LoginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	h.DB.Create(&SessionTokenObj)
 	userToken, err := auth.GenerateJWT(info.Id)
-
+	if err != nil {
+		http.Redirect(w, r, redirect+"?error=token_error", http.StatusInternalServerError)
+		return
+	}
 	//redirect to frontend with jwt
 	http.Redirect(w, r, redirect+"?token="+userToken+"&session="+SessionTokenObj.ID.String(), http.StatusFound)
 
