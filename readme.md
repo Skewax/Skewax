@@ -36,6 +36,7 @@ requires variables:
 - JWT_KEY
 - ALLOWED_ORIGINS
 
+# [Issue Tracker](https://trello.com/b/TZLNcQoT)
 
 # Tech Stack
 
