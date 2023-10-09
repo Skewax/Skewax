@@ -47,7 +47,6 @@ func ParseJWT(tokenStr string) (string, error) {
 		return jwtKey, nil // returns our JWT key to the parser to check if the incoming token is valid
 	})
 	if err != nil {
-		fmt.Printf("validation err: %s, %s\n", err.Error(), tokenStr)
 		return "", err
 	}
 	return claims.UserId, nil
@@ -69,13 +68,13 @@ func Middleware(orm *gorm.DB) func(http.Handler) http.Handler {
 			fmt.Println("header")
 			userId, err := ParseJWT(tokenStr)
 			if err != nil {
-				http.Error(w, `{"errors":["invalid token"]}`, http.StatusForbidden)
+				http.Error(w, `{"errors":["authentication-error", "`+err.Error()+`"]}`, http.StatusForbidden)
 				return
 			}
 
 			user := orm.First(&db.AuthUser{}, "id = ?", userId)
 			if user.Error != nil {
-				http.Error(w, `{"errors":["invalid token"]}`, http.StatusForbidden)
+				http.Error(w, `{"errors":["authentication-error", "`+user.Error.Error()+`"]}`, http.StatusForbidden)
 				return
 			}
 
