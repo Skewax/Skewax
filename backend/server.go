@@ -27,7 +27,7 @@ func main() {
 		port = defaultPort
 	}
 
-	origins := strings.Split(os.Getenv("CORS_ORIGINS"), ",")
+	origins := strings.Split(os.Getenv("ALLOWED_ORIGINS"), ",")
 
 	router := chi.NewRouter()
 	router.Use(cors.New(cors.Options{

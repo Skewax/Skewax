@@ -19,7 +19,7 @@ const router = createBrowserRouter([
 ])
 
 const client = new ApolloClient({
-  uri: 'http://localhost:8000/query',
+  uri: import.meta.env.VITE_GRAPHQL_ENDPOINT,
   cache: new InMemoryCache(),
 
 });
