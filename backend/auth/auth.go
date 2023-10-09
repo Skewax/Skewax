@@ -57,9 +57,8 @@ func Middleware(orm *gorm.DB) func(http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			header := r.Header.Get("Authorization")
 
-			// Allow unauthenticated users in
 			if header == "" {
-				http.Error(w, `{"errors":["missing authentication token"]}`, http.StatusForbidden)
+				http.Error(w, `{ "errors":[ { "message": "authentication error" } ] }`, http.StatusOK)
 				return
 			}
 
@@ -68,13 +67,13 @@ func Middleware(orm *gorm.DB) func(http.Handler) http.Handler {
 			fmt.Println("header")
 			userId, err := ParseJWT(tokenStr)
 			if err != nil {
-				http.Error(w, `{"errors":["authentication-error", "`+err.Error()+`"]}`, http.StatusForbidden)
+				http.Error(w, `{"errors":[ { "message": "authentication error: `+err.Error()+`" } ]}`, http.StatusOK)
 				return
 			}
 
 			user := orm.First(&db.AuthUser{}, "id = ?", userId)
 			if user.Error != nil {
-				http.Error(w, `{"errors":["authentication-error", "`+user.Error.Error()+`"]}`, http.StatusForbidden)
+				http.Error(w, `{"errors":[ { "message": "authentication-error `+user.Error.Error()+`" } ]}`, http.StatusOK)
 				return
 			}
 

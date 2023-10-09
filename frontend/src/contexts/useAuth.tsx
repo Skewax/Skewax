@@ -26,7 +26,7 @@ const gsi = window.google.accounts.oauth2.initCodeClient({
   client_id: gapiConfig.clientId,
   ux_mode: 'redirect',
   scope: gapiConfig.scope,
-  redirect_uri: 'http://localhost:8000/signin',
+  redirect_uri: import.meta.env.VITE_LOGIN_ENDPOINT,
 })
 const AuthProvider = ({ children }: AuthProviderProps) => {
 

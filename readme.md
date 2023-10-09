@@ -15,6 +15,9 @@ This compose file is currently a development file. The production compose file i
 requires variables `POSTGRES_USER`, `POSTGRES_PASSWORD`, and `POSTGRES_DB`
 
 #### `.web.env`
+requires variables:
+- VITE_GRAPHQL_ENDPOINT
+- VITE_LOGIN_ENDPOINT
 
 #### `.redis.env`
 
