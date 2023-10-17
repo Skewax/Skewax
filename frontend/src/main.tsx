@@ -3,6 +3,7 @@ import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 import HomePage from './pages/HomePage'
 import { ThemeProvider, createTheme, useMediaQuery } from '@mui/material'
 import { EditorPage } from './pages/EditorPage'
+import { SigninPage } from './pages/SigninPage'
 import ReactDOM from 'react-dom/client'
 import { AuthProvider } from './contexts/useAuth'
 import { ApolloClient, InMemoryCache, ApolloProvider, useQuery, gql, HttpLink } from "@apollo/client";
@@ -15,6 +16,10 @@ const router = createBrowserRouter([
   {
     path: "/editor",
     element: <EditorPage />
+  },
+  {
+    path:"/signin",
+    element: <SigninPage />
   }
 ])
 
