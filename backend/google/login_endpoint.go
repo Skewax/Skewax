@@ -39,7 +39,7 @@ func (h *LoginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	if len(overlap) != len(neededScopes) {
 		//redirect to frontend with error
-		http.Redirect(w, r, redirect+"?error=scope_error", http.StatusUnauthorized)
+		http.Redirect(w, r, redirect+"?error=scope_error", http.StatusFound)
 		return
 	}
 
@@ -47,19 +47,19 @@ func (h *LoginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	token, err := h.Google.ExchangeCode(params.Get("code"))
 	if err != nil {
 		//redirect to frontend with error
-		http.Redirect(w, r, redirect+"?error=code_error", http.StatusInternalServerError)
+		http.Redirect(w, r, redirect+"?error=code_error", http.StatusFound)
 		return
 	}
 
 	//get user info from google
 	service, err := h.Google.Service(token)
 	if err != nil {
-		http.Redirect(w, r, redirect+"?error=token_error", http.StatusInternalServerError)
+		http.Redirect(w, r, redirect+"?error=token_error", http.StatusFound)
 		return
 	}
 	info, err := service.Userinfo.Get().Do()
 	if err != nil {
-		http.Redirect(w, r, redirect+"?error=user_error", http.StatusBadRequest)
+		http.Redirect(w, r, redirect+"?error=user_error", http.StatusFound)
 		return
 	}
 
@@ -81,7 +81,7 @@ func (h *LoginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.DB.Create(&SessionTokenObj)
 	userToken, err := auth.GenerateJWT(info.Id)
 	if err != nil {
-		http.Redirect(w, r, redirect+"?error=token_error", http.StatusInternalServerError)
+		http.Redirect(w, r, redirect+"?error=token_error", http.StatusFound)
 		return
 	}
 	//redirect to frontend with jwt
