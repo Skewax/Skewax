@@ -4,35 +4,13 @@ import logoDark from '../../../assets/logo-dark.svg'
 import logoLight from '../../../assets/logo-light-background.svg'
 import useIsDarkMode from "../../../hooks/useIsDarkMode"
 import Searchbar from "./Searchbar"
-import { useAuth } from "../../../contexts/useAuth"
 import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state"
-import { useLazyQuery } from "@apollo/client"
-import { useEffect } from "react"
-import { gql } from "../../../__generated__"
-
-const test_query = gql(`
-query TestQuery {
-  me {
-    id
-    email
-  }
-}
-`)
+import useAuth from "../../../hooks/useAuth"
 
 const Navbar = () => {
   const isDark = useIsDarkMode()
 
   const { signIn, isSignedIn, user, signOut } = useAuth()
-
-  const [requestIGuess, { data, error, loading }] = useLazyQuery(test_query);
-
-  useEffect(() => {
-    if (!loading) {
-      console.log(data)
-      console.log(error)
-    }
-  }, [loading])
-
 
   return (
     <PopupState variant='popover' popupId='navbar-popup'>
@@ -90,18 +68,6 @@ const Navbar = () => {
                             <Button fullWidth onClick={signOut}>Sign Out</Button>
                           </Box>
                         }
-                        <Button fullWidth onClick={async () => {
-                          console.log(window.gapi.client.getToken())
-
-                          requestIGuess()
-
-
-                          // const res = await window.gapi.client.drive?.files.list({
-                          //   pageSize: 10,
-                          //   fields: 'nextPageToken, files(id, name)',
-                          // })
-                          // console.log(res)
-                        }}>freest</Button>
                       </Stack>
                     </Box>
                   </Popover>

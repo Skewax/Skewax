@@ -1,7 +1,9 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react"
-import usePersistedState from "../hooks/usePersistedState";
+import { useMemo } from "react"
+import useAuthState from "../hooks/useAuthState"
+import { AuthContext } from "./AuthContext";
 
 function parseJwt(token: string) {
+  console.log("attempting ", token)
   const base64Url = token.split('.')[1];
   const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
   const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
@@ -10,28 +12,16 @@ function parseJwt(token: string) {
 
   return JSON.parse(jsonPayload);
 }
-const gapiConfig = {
-  scope: 'https://www.googleapis.com/auth/drive.file email profile openid',
-  discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
-  clientId: '1085983367599-5527f55859r5mufahtfe5nso9s0sf9lq.apps.googleusercontent.com'
-};
-
-interface AuthContext {
-  signIn: () => void
-  signOut: () => void
-  user: null
-  isSignedIn: boolean
-}
 
 interface AuthProviderProps {
   children: React.ReactNode
 }
 
-
-const AuthContext = createContext<AuthContext>({} as AuthContext)
-
-const useAuth = () => useContext(AuthContext)
-
+const gapiConfig = {
+  scope: 'https://www.googleapis.com/auth/drive.file email profile openid',
+  discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
+  clientId: '1085983367599-5527f55859r5mufahtfe5nso9s0sf9lq.apps.googleusercontent.com'
+};
 const gsi = window.google.accounts.oauth2.initCodeClient({
   client_id: gapiConfig.clientId,
   ux_mode: 'redirect',
@@ -40,25 +30,16 @@ const gsi = window.google.accounts.oauth2.initCodeClient({
 })
 const AuthProvider = ({ children }: AuthProviderProps) => {
 
-  const [token, setToken] = usePersistedState<string | null>('token', null)
+  const [authState,] = useAuthState()
   const parsed = useMemo(() => {
-    if (token != null) {
-      return parseJwt(token)
+    if (authState?.token != null) {
+      return parseJwt(authState.token)
     }
     else {
       return null
     }
   }
-    , [token])
-  console.log("parsed jwt: ", parsed)
-
-  useEffect(() => {
-    if (token !== null) {
-      const tokenOut = parseJwt(token)
-      console.log(tokenOut)
-    }
-  }, [token])
-
+    , [authState?.token])
 
 
 
@@ -86,7 +67,4 @@ const Wrapper = ({ children }: AuthProviderProps) => {
   )
 }
 
-export {
-  Wrapper as AuthProvider,
-  useAuth
-}
+export default Wrapper
