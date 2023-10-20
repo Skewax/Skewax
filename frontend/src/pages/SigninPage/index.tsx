@@ -1,16 +1,19 @@
-import * as React from 'react';
-import {useSearchParams} from 'react-router-dom';
-import {Navigate} from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
+import { useEffect } from 'react';
+import useAuthState from '../../hooks/useAuthState';
 
 export const SigninPage = () => {
-    const [params]=useSearchParams();
-    
-    const error=params.get("error");
-    if (error != null)
-    	return (<Navigate replace to={`/editor?error=${error}`}/>);
-    
-    localStorage.setItem("token", params.get("token"));
-    localStorage.setItem("session", params.get("session"));
-    
-    return (<Navigate replace to="/editor"/>);
+  const [params] = useSearchParams();
+  const [, setAuthState] = useAuthState()
+  useEffect(() => {
+    setAuthState({ token: params.get("token"), session: params.get("session") });
+  })
+
+  const error = params.get("error");
+  if (error != null)
+    return (<Navigate replace to={`/editor?error=${error}`} />);
+
+
+  return (<Navigate replace to="/editor" />);
 }
