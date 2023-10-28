@@ -4,9 +4,9 @@ import HomePage from './pages/HomePage'
 import { ThemeProvider, createTheme, useMediaQuery } from '@mui/material'
 import { EditorPage } from './pages/EditorPage'
 import { SigninPage } from './pages/SigninPage'
-import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
-import AuthProvider from './contexts/AuthProvider'
-import { useMemo } from 'react'
+import { ApolloClient, ApolloLink, InMemoryCache, ApolloProvider, HttpLink, createHttpLink, concat } from "@apollo/client";
+import { useEffect, useMemo } from 'react'
+import useAuth from './hooks/useAuth'
 
 const router = createBrowserRouter([
   {
@@ -23,23 +23,47 @@ const router = createBrowserRouter([
   }
 ])
 
-const client = new ApolloClient({
+const httpLink = createHttpLink({
   uri: import.meta.env.VITE_GRAPHQL_ENDPOINT,
+})
+
+const client = new ApolloClient({
+  link: httpLink,
   cache: new InMemoryCache(),
 
 });
+
 
 const App = () => {
 
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
   const theme = useMemo(() => createTheme({ palette: { mode: prefersDarkMode ? 'dark' : 'light' } }), [prefersDarkMode])
+  const { jwtData } = useAuth()
+  console.log(jwtData)
+
+  useEffect(() => {
+    if (jwtData == null) return
+    const authMiddleware = new ApolloLink((operation, forward) => {
+      operation.setContext(({ headers = {} }) => ({
+        headers: {
+          authorization: jwtData.raw,
+          ...headers
+        }
+      }))
+      return forward(operation)
+    })
+
+
+    client.setLink(authMiddleware.concat(httpLink))
+    // client.refetchQueries({
+    // include: "all"
+    // })
+  }, [jwtData])
 
   return (
     <ApolloProvider client={client}>
       <ThemeProvider theme={theme}>
-        <AuthProvider>
-          <RouterProvider router={router} />
-        </AuthProvider>
+        <RouterProvider router={router} />
       </ThemeProvider>
     </ApolloProvider>
   )

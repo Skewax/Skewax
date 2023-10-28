@@ -6,11 +6,28 @@ import useIsDarkMode from "../../../hooks/useIsDarkMode"
 import Searchbar from "./Searchbar"
 import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state"
 import useAuth from "../../../hooks/useAuth"
+import { gql } from "../../../__generated__"
+import { useLazyQuery, useQuery } from "@apollo/client"
+
+const userQuery = gql(`
+  query Me {
+    me {
+      id
+      name
+      email
+      image
+    }
+  }
+
+`)
 
 const Navbar = () => {
   const isDark = useIsDarkMode()
 
   const { signIn, isSignedIn, user, signOut } = useAuth()
+  const [doUserQuery, { data: userData }] = useLazyQuery(userQuery)
+
+
 
   return (
     <PopupState variant='popover' popupId='navbar-popup'>
@@ -34,8 +51,8 @@ const Navbar = () => {
                   <Button {...bindTrigger(popupState)}>
                     <Avatar
                       sx={{ height: '30px', width: '30px', border: 1, borderColor: 'secondary.default' }}
-                      alt={user?.displayName ?? 'Login'}
-                      src={user?.photoURL ?? ''}
+                      alt={userData?.me.name ?? 'Login'}
+                      src={userData?.me.image ?? ''}
                     />
                   </Button>
                   <Popover
@@ -65,6 +82,7 @@ const Navbar = () => {
                         }
                         {isSignedIn &&
                           <Box display='flex' flexDirection='column' justifyContent='center'>
+                            <Button fullWidth onClick={doUserQuery}>Profile</Button>
                             <Button fullWidth onClick={signOut}>Sign Out</Button>
                           </Box>
                         }

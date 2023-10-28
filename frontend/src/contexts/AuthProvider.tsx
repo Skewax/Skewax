@@ -1,17 +1,18 @@
 import { useMemo } from "react"
 import useAuthState from "../hooks/useAuthState"
-import { AuthContext } from "./AuthContext";
+import { AuthContext, JWT } from "./AuthContext";
 
-function parseJwt(token: string) {
-  console.log("attempting ", token)
+function parseJwt(token: string): { exp: number, iss: string, user_id: string } {
   const base64Url = token.split('.')[1];
   const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
   const jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
     return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
   }).join(''));
 
+
   return JSON.parse(jsonPayload);
 }
+
 
 interface AuthProviderProps {
   children: React.ReactNode
@@ -30,17 +31,25 @@ const gsi = window.google.accounts.oauth2.initCodeClient({
 })
 const AuthProvider = ({ children }: AuthProviderProps) => {
 
-  const [authState,] = useAuthState()
-  const parsed = useMemo(() => {
+  const [authState, setAuthState] = useAuthState()
+  const jwt: JWT | null = useMemo(() => {
     if (authState?.token != null) {
-      return parseJwt(authState.token)
+      const uncheckedJwt = parseJwt(authState.token)
+      if (uncheckedJwt.iss != "Skewax" || new Date(uncheckedJwt.exp * 1000) < new Date()) {
+        //TODO: implement refresh token
+        setAuthState({ token: null, session: null })
+        return null
+      }
+      return {
+        exp: new Date(uncheckedJwt.exp * 1000),
+        userId: uncheckedJwt.user_id,
+      }
     }
     else {
       return null
     }
   }
-    , [authState?.token])
-
+    , [authState?.token, setAuthState])
 
 
   return (
@@ -51,7 +60,11 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
       signOut: () => {
 
       },
-      isSignedIn: false,
+      jwtData: authState?.token == null || jwt == null ? null : {
+        raw: authState.token,
+        parsed: jwt
+      },
+      isSignedIn: jwt !== null,
       user: null,
     }}>
       {children}
