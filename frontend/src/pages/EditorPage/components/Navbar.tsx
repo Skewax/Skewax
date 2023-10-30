@@ -4,34 +4,29 @@ import logoDark from '../../../assets/logo-dark.svg'
 import logoLight from '../../../assets/logo-light-background.svg'
 import useIsDarkMode from "../../../hooks/useIsDarkMode"
 import Searchbar from "./Searchbar"
-import { useAuth } from "../../../contexts/useAuth"
 import PopupState, { bindTrigger, bindPopover } from "material-ui-popup-state"
-import { useLazyQuery } from "@apollo/client"
-import { useEffect } from "react"
+import useAuth from "../../../hooks/useAuth"
 import { gql } from "../../../__generated__"
+import { useLazyQuery, useQuery } from "@apollo/client"
 
-const test_query = gql(`
-query TestQuery {
-  me {
-    id
-    email
+const userQuery = gql(`
+  query Me {
+    me {
+      id
+      name
+      email
+      image
+    }
   }
-}
+
 `)
 
 const Navbar = () => {
   const isDark = useIsDarkMode()
 
   const { signIn, isSignedIn, user, signOut } = useAuth()
+  const [doUserQuery, { data: userData }] = useLazyQuery(userQuery)
 
-  const [requestIGuess, { data, error, loading }] = useLazyQuery(test_query);
-
-  useEffect(() => {
-    if (!loading) {
-      console.log(data)
-      console.log(error)
-    }
-  }, [loading])
 
 
   return (
@@ -56,8 +51,8 @@ const Navbar = () => {
                   <Button {...bindTrigger(popupState)}>
                     <Avatar
                       sx={{ height: '30px', width: '30px', border: 1, borderColor: 'secondary.default' }}
-                      alt={user?.displayName ?? 'Login'}
-                      src={user?.photoURL ?? ''}
+                      alt={userData?.me.name ?? 'Login'}
+                      src={userData?.me.image ?? ''}
                     />
                   </Button>
                   <Popover
@@ -87,21 +82,10 @@ const Navbar = () => {
                         }
                         {isSignedIn &&
                           <Box display='flex' flexDirection='column' justifyContent='center'>
+                            <Button fullWidth onClick={doUserQuery}>Profile</Button>
                             <Button fullWidth onClick={signOut}>Sign Out</Button>
                           </Box>
                         }
-                        <Button fullWidth onClick={async () => {
-                          console.log(window.gapi.client.getToken())
-
-                          requestIGuess()
-
-
-                          // const res = await window.gapi.client.drive?.files.list({
-                          //   pageSize: 10,
-                          //   fields: 'nextPageToken, files(id, name)',
-                          // })
-                          // console.log(res)
-                        }}>freest</Button>
                       </Stack>
                     </Box>
                   </Popover>
