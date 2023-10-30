@@ -24,7 +24,7 @@ const userQuery = gql(`
 const Navbar = () => {
   const isDark = useIsDarkMode()
 
-  const { signIn, isSignedIn, user, signOut } = useAuth()
+  const { signIn, isSignedIn, user, signOut, requestToken } = useAuth()
   const [doUserQuery, { data: userData }] = useLazyQuery(userQuery)
 
 
@@ -84,6 +84,7 @@ const Navbar = () => {
                           <Box display='flex' flexDirection='column' justifyContent='center'>
                             <Button fullWidth onClick={doUserQuery}>Profile</Button>
                             <Button fullWidth onClick={signOut}>Sign Out</Button>
+                            <Button fullWidth onClick={requestToken}>Request Token</Button>
                           </Box>
                         }
                       </Stack>
