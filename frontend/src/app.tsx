@@ -8,6 +8,7 @@ import { ApolloClient, ApolloLink, InMemoryCache, ApolloProvider, createHttpLink
 import { setContext } from '@apollo/client/link/context';
 import { useMemo } from 'react'
 import useAuth from './hooks/useAuth'
+import { onError } from "@apollo/client/link/error";
 
 const router = createBrowserRouter([
   {
@@ -37,7 +38,7 @@ const App = () => {
 
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
   const theme = useMemo(() => createTheme({ palette: { mode: prefersDarkMode ? 'dark' : 'light' } }), [prefersDarkMode])
-  const { jwtData } = useAuth()
+  const { jwtData, requestToken } = useAuth()
 
 
   const client = useMemo(() => {
@@ -55,13 +56,25 @@ const App = () => {
         },
       }
     })
+
+    const errorMiddleware = onError(({ graphQLErrors }) => {
+      if (graphQLErrors) {
+        graphQLErrors.forEach(({ message }) => {
+          if (message === "authentication error") {
+            requestToken()
+          }
+        })
+      }
+    })
+
+
     return new ApolloClient({
       // link: httpLink.concat(authMiddleware),
-      link: ApolloLink.from([authMiddleware, httpLink]),
+      link: ApolloLink.from([authMiddleware, errorMiddleware, httpLink]),
       cache: new InMemoryCache(),
 
     });
-  }, [jwtData]);
+  }, [jwtData, requestToken]);
 
   return (
     <ApolloProvider client={client}>

@@ -64,16 +64,15 @@ func Middleware(orm *gorm.DB) func(http.Handler) http.Handler {
 
 			// Validate token
 			tokenStr := header
-			fmt.Println("header")
 			userId, err := ParseJWT(tokenStr)
 			if err != nil {
-				http.Error(w, `{"errors":[ { "message": "authentication error: `+err.Error()+`" } ]}`, http.StatusOK)
+				http.Error(w, `{"errors":[ { "message": "authentication error" }, { "message": "`+err.Error()+`" } ]}`, http.StatusOK)
 				return
 			}
 
 			user := orm.First(&db.AuthUser{}, "id = ?", userId)
 			if user.Error != nil {
-				http.Error(w, `{"errors":[ { "message": "authentication-error `+user.Error.Error()+`" } ]}`, http.StatusOK)
+				http.Error(w, `{"errors":[ { "message": "authentication error" }, { "message": "`+user.Error.Error()+`" } ]}`, http.StatusOK)
 				return
 			}
 
