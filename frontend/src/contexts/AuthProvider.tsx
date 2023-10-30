@@ -58,7 +58,7 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
         gsi.requestCode();
       },
       signOut: () => {
-
+        setAuthState({ token: null, session: null })
       },
       jwtData: authState?.token == null || jwt == null ? null : {
         raw: authState.token,
