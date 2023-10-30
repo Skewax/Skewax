@@ -4,8 +4,9 @@ import HomePage from './pages/HomePage'
 import { ThemeProvider, createTheme, useMediaQuery } from '@mui/material'
 import { EditorPage } from './pages/EditorPage'
 import { SigninPage } from './pages/SigninPage'
-import { ApolloClient, ApolloLink, InMemoryCache, ApolloProvider, HttpLink, createHttpLink, concat } from "@apollo/client";
-import { useEffect, useMemo } from 'react'
+import { ApolloClient, ApolloLink, InMemoryCache, ApolloProvider, createHttpLink } from "@apollo/client";
+import { setContext } from '@apollo/client/link/context';
+import { useMemo } from 'react'
 import useAuth from './hooks/useAuth'
 
 const router = createBrowserRouter([
@@ -25,13 +26,11 @@ const router = createBrowserRouter([
 
 const httpLink = createHttpLink({
   uri: import.meta.env.VITE_GRAPHQL_ENDPOINT,
+  fetchOptions: {
+    mode: 'cors',
+  },
 })
 
-const client = new ApolloClient({
-  link: httpLink,
-  cache: new InMemoryCache(),
-
-});
 
 
 const App = () => {
@@ -39,26 +38,30 @@ const App = () => {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)')
   const theme = useMemo(() => createTheme({ palette: { mode: prefersDarkMode ? 'dark' : 'light' } }), [prefersDarkMode])
   const { jwtData } = useAuth()
-  console.log(jwtData)
 
-  useEffect(() => {
-    if (jwtData == null) return
-    const authMiddleware = new ApolloLink((operation, forward) => {
-      operation.setContext(({ headers = {} }) => ({
+
+  const client = useMemo(() => {
+
+    if (jwtData == null) return new ApolloClient({
+      link: httpLink,
+      cache: new InMemoryCache(),
+    });
+
+    const authMiddleware = setContext((_, { headers }) => {
+      return {
         headers: {
-          authorization: jwtData.raw,
-          ...headers
-        }
-      }))
-      return forward(operation)
+          ...headers,
+          "Authorization": jwtData.raw,
+        },
+      }
     })
+    return new ApolloClient({
+      // link: httpLink.concat(authMiddleware),
+      link: ApolloLink.from([authMiddleware, httpLink]),
+      cache: new InMemoryCache(),
 
-
-    client.setLink(authMiddleware.concat(httpLink))
-    // client.refetchQueries({
-    // include: "all"
-    // })
-  }, [jwtData])
+    });
+  }, [jwtData]);
 
   return (
     <ApolloProvider client={client}>

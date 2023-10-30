@@ -33,6 +33,7 @@ func main() {
 	router.Use(cors.New(cors.Options{
 		AllowedOrigins:   origins,
 		AllowCredentials: true,
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 	}).Handler)
 
 	orm := db.InitDB()
