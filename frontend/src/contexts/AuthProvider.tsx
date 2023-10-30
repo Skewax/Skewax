@@ -29,28 +29,53 @@ const gsi = window.google.accounts.oauth2.initCodeClient({
   scope: gapiConfig.scope,
   redirect_uri: import.meta.env.VITE_LOGIN_ENDPOINT,
 })
+
+const getJWTData = (token: string): JWT | null => {
+
+  if (token != null) {
+    const uncheckedJwt = parseJwt(token)
+    if (uncheckedJwt.iss != "Skewax" || new Date(uncheckedJwt.exp * 1000) < new Date()) {
+      return null
+    }
+    return {
+      exp: new Date(uncheckedJwt.exp * 1000),
+      userId: uncheckedJwt.user_id,
+    }
+  }
+  else {
+    return null
+  }
+}
+
+const doTokenRequest = async (code: string): Promise<{ token: string, session: string } | null> => {
+  const response = await fetch(import.meta.env.VITE_REFRESH_ENDPOINT + "?session=" + code)
+  if (response.status !== 200) return null
+  const data: { token: string, session: string } = await response.json()
+  return data
+}
+
 const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const [authState, setAuthState] = useAuthState()
   const jwt: JWT | null = useMemo(() => {
-    if (authState?.token != null) {
-      const uncheckedJwt = parseJwt(authState.token)
-      if (uncheckedJwt.iss != "Skewax" || new Date(uncheckedJwt.exp * 1000) < new Date()) {
-        //TODO: implement refresh token
-        setAuthState({ token: null, session: null })
-        return null
-      }
-      return {
-        exp: new Date(uncheckedJwt.exp * 1000),
-        userId: uncheckedJwt.user_id,
-      }
+    if (authState?.token == null) return null
+    return getJWTData(authState.token)
+  }, [authState?.token])
+
+
+  const requestToken = async () => {
+    if (authState?.session == null) {
+      setAuthState({ token: null, session: null })
+      return
+    }
+    const newToken = await doTokenRequest(authState?.session)
+    if (newToken === null) {
+      setAuthState({ token: null, session: null })
     }
     else {
-      return null
+      setAuthState({ token: newToken.token, session: newToken.session })
     }
   }
-    , [authState?.token, setAuthState])
-
 
   return (
     <AuthContext.Provider value={{
@@ -60,6 +85,8 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
       signOut: () => {
         setAuthState({ token: null, session: null })
       },
+      requestToken: requestToken,
+
       jwtData: authState?.token == null || jwt == null ? null : {
         raw: authState.token,
         parsed: jwt

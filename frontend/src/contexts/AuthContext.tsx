@@ -7,6 +7,7 @@ export interface JWT {
 interface AuthContextProps {
   signIn: () => void
   signOut: () => void
+  requestToken: () => void
   isSignedIn: boolean
   user: unknown
   jwtData: {
