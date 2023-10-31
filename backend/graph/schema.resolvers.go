@@ -58,13 +58,18 @@ func (r *mutationResolver) MoveDirectory(ctx context.Context, id string, directo
 
 // Me is the resolver for the me field.
 func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
-	//THIS IS PURELY FOR TESTING PURPOSES
 	var user db.AuthUser
 	err := r.DB.First(&user).Error
 	if err != nil {
 		return nil, err
 	}
-	uSrv, err := r.Google.UserService(user.GetToken())
+
+	token, err := r.Google.VerifyUser(user, r.DB)
+	if err != nil {
+		return nil, err
+	}
+
+	uSrv, err := r.Google.UserService(token)
 	if err != nil {
 		return nil, err
 	}
