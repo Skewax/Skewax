@@ -52,7 +52,7 @@ func (h *LoginHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//get user info from google
-	service, err := h.Google.Service(token)
+	service, err := h.Google.UserService(token)
 	if err != nil {
 		http.Redirect(w, r, redirect+"?error=token_error", http.StatusFound)
 		return

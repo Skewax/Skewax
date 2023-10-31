@@ -60,12 +60,24 @@ func (r *mutationResolver) MoveDirectory(ctx context.Context, id string, directo
 func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
 	//THIS IS PURELY FOR TESTING PURPOSES
 	var user db.AuthUser
-	r.DB.First(&user)
+	err := r.DB.First(&user).Error
+	if err != nil {
+		return nil, err
+	}
+	uSrv, err := r.Google.UserService(user.GetToken())
+	if err != nil {
+		return nil, err
+	}
+	userInfo, err := uSrv.Userinfo.Get().Do()
+	if err != nil {
+		return nil, err
+	}
+
 	return &model.User{
-		ID:    "1",
-		Name:  user.AccessToken,
-		Image: "https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50",
-		Email: "test",
+		ID:    userInfo.Id,
+		Name:  userInfo.Name,
+		Image: userInfo.Picture,
+		Email: userInfo.Email,
 	}, nil
 }
 

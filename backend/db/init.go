@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"golang.org/x/oauth2"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -15,6 +16,14 @@ type AuthUser struct {
 	AccessToken       string
 	AccessTokenExpiry *time.Time
 	RefreshToken      string
+}
+
+func (u *AuthUser) GetToken() *oauth2.Token {
+	return &oauth2.Token{
+		AccessToken:  u.AccessToken,
+		RefreshToken: u.RefreshToken,
+		Expiry:       *u.AccessTokenExpiry,
+	}
 }
 
 type SessionToken struct {
