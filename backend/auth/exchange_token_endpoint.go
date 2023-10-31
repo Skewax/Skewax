@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -19,22 +20,23 @@ var (
 	redirect = os.Getenv("REDIRECT_URI")
 )
 
+// TODO: rewrite this to not use redirects and instead just return in the body
 func (h *ExhangeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	sessionId := r.URL.Query().Get("session")
 	session := db.SessionToken{}
 	err := h.DB.First(&session, "id = ?", sessionId).Error
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			http.Redirect(w, r, redirect+"?error=session_error", http.StatusUnauthorized)
+			http.Error(w, "Session Error", http.StatusUnauthorized)
 			return
 		} else {
-			http.Redirect(w, r, redirect+"?error=database_error", http.StatusInternalServerError)
+			http.Error(w, "Database Error", http.StatusInternalServerError)
 			return
 		}
 	}
 	if session.Expiry.Before(time.Now()) {
 		h.DB.Delete(&session)
-		http.Redirect(w, r, redirect+"?error=session_expiry_error", http.StatusUnauthorized)
+		http.Error(w, "Session Expired", http.StatusUnauthorized)
 		return
 	}
 	userId := session.AuthUserID
@@ -48,8 +50,16 @@ func (h *ExhangeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	h.DB.Delete(&session)
 	userToken, err := GenerateJWT(userId)
 	if err != nil {
-		http.Redirect(w, r, redirect+"?error=token_error", http.StatusInternalServerError)
+		http.Error(w, "Token Error", http.StatusInternalServerError)
 		return
 	}
-	http.Redirect(w, r, redirect+"?token="+userToken+"&session="+newSession.ID.String(), http.StatusFound)
+	jsonOut, err := json.Marshal(map[string]string{
+		"token":   userToken,
+		"session": newSession.ID.String(),
+	})
+	if err != nil {
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+	w.Write([]byte(jsonOut))
 }

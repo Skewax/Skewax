@@ -33,17 +33,12 @@ func main() {
 	router.Use(cors.New(cors.Options{
 		AllowedOrigins:   origins,
 		AllowCredentials: true,
+		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 	}).Handler)
 
 	orm := db.InitDB()
 	authMiddleware := auth.Middleware(orm)
 
-	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
-		DB: orm,
-	}}))
-
-	router.Handle("/", playground.Handler("GraphQL playground", "/query"))
-	router.Handle("/query", authMiddleware(srv))
 	googleProvider := google.NewGoogleProvider(&oauth2.Config{
 		ClientID:     os.Getenv("GOOGLE_OAUTH_CLIENT_ID"),
 		ClientSecret: os.Getenv("GOOGLE_OAUTH_CLIENT_SECRET"),
@@ -51,6 +46,14 @@ func main() {
 		Scopes:       strings.Split(os.Getenv("GOOGLE_OAUTH_SCOPES"), ","),
 		Endpoint:     extGoogle.Endpoint,
 	})
+
+	srv := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{Resolvers: &graph.Resolver{
+		DB:     orm,
+		Google: googleProvider,
+	}}))
+
+	router.Handle("/", playground.Handler("GraphQL playground", "/query"))
+	router.Handle("/query", authMiddleware(srv))
 
 	srvLogin := &google.LoginHandler{
 		Google: googleProvider,
