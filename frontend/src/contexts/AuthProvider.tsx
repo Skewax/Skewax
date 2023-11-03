@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import { useEffect, useMemo } from "react"
 import useAuthState from "../hooks/useAuthState"
 import { AuthContext, JWT } from "./AuthContext";
 
@@ -76,6 +76,12 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
       setAuthState({ token: newToken.token, session: newToken.session })
     }
   }
+
+  useEffect(() => {
+    if ((jwt === null) && (authState?.session ?? null) !== null) {
+      requestToken()
+    }
+  }, [jwt, authState?.session])
 
   return (
     <AuthContext.Provider value={{
