@@ -18,6 +18,7 @@ requires variables `POSTGRES_USER`, `POSTGRES_PASSWORD`, and `POSTGRES_DB`
 requires variables:
 - VITE_GRAPHQL_ENDPOINT
 - VITE_LOGIN_ENDPOINT
+- VITE_REFRESH_ENDPOINT
 
 #### `.redis.env`
 
