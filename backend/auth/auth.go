@@ -40,7 +40,7 @@ func GenerateJWT(userId string) (string, error) {
 
 func ParseJWT(tokenStr string) (string, error) {
 	claims := Claims{}
-	_, err := jwt.ParseWithClaims(tokenStr, &claims, func(t *jwt.Token) (interface{}, error) {
+	jwt, err := jwt.ParseWithClaims(tokenStr, &claims, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("bad token")
 		}
@@ -48,6 +48,9 @@ func ParseJWT(tokenStr string) (string, error) {
 	})
 	if err != nil {
 		return "", err
+	}
+	if !jwt.Valid {
+		return "", fmt.Errorf("bad token")
 	}
 	return claims.UserId, nil
 }
