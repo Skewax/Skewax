@@ -14,6 +14,7 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  */
 const documents = {
     "\n  query Me {\n    me {\n      id\n      name\n      email\n      image\n    }\n  }\n\n": types.MeDocument,
+    "\nquery BaseDirectory {\n  baseDirectory {\n    id\n    name\n    files {\n      id\n      name\n      contents\n    }\n    directories {\n      id\n      name\n      files {\n        id\n        name\n      }\n    }\n  }\n}\n": types.BaseDirectoryDocument,
 };
 
 /**
@@ -34,6 +35,10 @@ export function gql(source: string): unknown;
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function gql(source: "\n  query Me {\n    me {\n      id\n      name\n      email\n      image\n    }\n  }\n\n"): (typeof documents)["\n  query Me {\n    me {\n      id\n      name\n      email\n      image\n    }\n  }\n\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\nquery BaseDirectory {\n  baseDirectory {\n    id\n    name\n    files {\n      id\n      name\n      contents\n    }\n    directories {\n      id\n      name\n      files {\n        id\n        name\n      }\n    }\n  }\n}\n"): (typeof documents)["\nquery BaseDirectory {\n  baseDirectory {\n    id\n    name\n    files {\n      id\n      name\n      contents\n    }\n    directories {\n      id\n      name\n      files {\n        id\n        name\n      }\n    }\n  }\n}\n"];
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};
