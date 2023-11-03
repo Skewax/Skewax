@@ -70,13 +70,15 @@ func Middleware(orm *gorm.DB) func(http.Handler) http.Handler {
 				return
 			}
 
-			user := orm.First(&db.AuthUser{}, "id = ?", userId)
-			if user.Error != nil {
-				http.Error(w, `{"errors":[ { "message": "authentication error" }, { "message": "`+user.Error.Error()+`" } ]}`, http.StatusOK)
+			user := db.AuthUser{}
+
+			err = orm.First(&user, "id = ?", userId).Error
+			if err != nil {
+				http.Error(w, `{"errors":[ { "message": "authentication error" }, { "message": "`+err.Error()+`" } ]}`, http.StatusOK)
 				return
 			}
 
-			ctx := context.WithValue(r.Context(), "user", &user)
+			ctx := context.WithValue(r.Context(), "user", user)
 			r = r.WithContext(ctx)
 			next.ServeHTTP(w, r)
 		})
