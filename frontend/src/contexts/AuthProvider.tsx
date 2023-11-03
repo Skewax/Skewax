@@ -21,7 +21,7 @@ interface AuthProviderProps {
 const gapiConfig = {
   scope: 'https://www.googleapis.com/auth/drive.file email profile openid',
   discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/drive/v3/rest'],
-  clientId: '1085983367599-5527f55859r5mufahtfe5nso9s0sf9lq.apps.googleusercontent.com'
+  clientId: import.meta.env.VITE_GOOGLE_CLIENT_ID,
 };
 const gsi = window.google.accounts.oauth2.initCodeClient({
   client_id: gapiConfig.clientId,
