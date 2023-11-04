@@ -65,7 +65,12 @@ func main() {
 		DB: orm,
 	}
 	router.Handle("/exchange", srvExchange)
-
+	
+	srvSignout := &auth.SignoutHandler{
+		DB: orm,
+	}
+	router.Handle("/signout", srvSignout)
+	
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
 	log.Fatal(http.ListenAndServe(":"+port, router))
 }
