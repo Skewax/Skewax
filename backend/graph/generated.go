@@ -67,14 +67,14 @@ type ComplexityRoot struct {
 
 	Mutation struct {
 		CreateDirectory func(childComplexity int, name string, parentDirectory string) int
-		CreateFile      func(childComplexity int, name string, contents string) int
+		CreateFile      func(childComplexity int, args model.FileCreate) int
 		DeleteDirectory func(childComplexity int, id string) int
 		DeleteFile      func(childComplexity int, id string) int
 		MoveDirectory   func(childComplexity int, id string, directoryID string) int
 		MoveFile        func(childComplexity int, id string, directoryID string) int
 		RenameDirectory func(childComplexity int, id string, name string) int
 		RenameFile      func(childComplexity int, id string, name string) int
-		UpdateFile      func(childComplexity int, id string, name string, contents string) int
+		UpdateFile      func(childComplexity int, id string, args model.FileUpdate) int
 	}
 
 	Query struct {
@@ -93,8 +93,8 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
-	CreateFile(ctx context.Context, name string, contents string) (*model.File, error)
-	UpdateFile(ctx context.Context, id string, name string, contents string) (*model.File, error)
+	CreateFile(ctx context.Context, args model.FileCreate) (*model.File, error)
+	UpdateFile(ctx context.Context, id string, args model.FileUpdate) (*model.File, error)
 	DeleteFile(ctx context.Context, id string) (*model.File, error)
 	CreateDirectory(ctx context.Context, name string, parentDirectory string) (*model.Directory, error)
 	DeleteDirectory(ctx context.Context, id string) (*model.Directory, error)
@@ -242,7 +242,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateFile(childComplexity, args["name"].(string), args["contents"].(string)), true
+		return e.complexity.Mutation.CreateFile(childComplexity, args["args"].(model.FileCreate)), true
 
 	case "Mutation.deleteDirectory":
 		if e.complexity.Mutation.DeleteDirectory == nil {
@@ -326,7 +326,7 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 			return 0, false
 		}
 
-		return e.complexity.Mutation.UpdateFile(childComplexity, args["id"].(string), args["name"].(string), args["contents"].(string)), true
+		return e.complexity.Mutation.UpdateFile(childComplexity, args["id"].(string), args["args"].(model.FileUpdate)), true
 
 	case "Query.baseDirectory":
 		if e.complexity.Query.BaseDirectory == nil {
@@ -401,7 +401,10 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 	rc := graphql.GetOperationContext(ctx)
 	ec := executionContext{rc, e, 0, 0, make(chan graphql.DeferredResult)}
-	inputUnmarshalMap := graphql.BuildUnmarshalerMap()
+	inputUnmarshalMap := graphql.BuildUnmarshalerMap(
+		ec.unmarshalInputFileCreate,
+		ec.unmarshalInputFileUpdate,
+	)
 	first := true
 
 	switch rc.Operation.Operation {
@@ -521,6 +524,16 @@ type File {
   contents: String!
 }
 
+input FileCreate {
+  name: String!
+  contents: String!
+}
+
+input FileUpdate {
+  name: String
+  contents: String
+}
+
 type Directory {
   name: String!
   createdAt: DateTime!
@@ -538,8 +551,8 @@ type Query {
 }
 
 type Mutation {
-  createFile(name: String!, contents: String!): File!
-  updateFile(id: ID!, name: String!, contents: String!): File!
+  createFile(args: FileCreate!): File!
+  updateFile(id: ID!, args: FileUpdate!): File!
   deleteFile(id: ID!): File!
   createDirectory(name: String!, parentDirectory: ID!): Directory!
   deleteDirectory(id: ID!): Directory!
@@ -583,24 +596,15 @@ func (ec *executionContext) field_Mutation_createDirectory_args(ctx context.Cont
 func (ec *executionContext) field_Mutation_createFile_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 string
-	if tmp, ok := rawArgs["name"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
-		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+	var arg0 model.FileCreate
+	if tmp, ok := rawArgs["args"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("args"))
+		arg0, err = ec.unmarshalNFileCreate2skewaxᚋgraphᚋmodelᚐFileCreate(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["name"] = arg0
-	var arg1 string
-	if tmp, ok := rawArgs["contents"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("contents"))
-		arg1, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["contents"] = arg1
+	args["args"] = arg0
 	return args, nil
 }
 
@@ -742,24 +746,15 @@ func (ec *executionContext) field_Mutation_updateFile_args(ctx context.Context, 
 		}
 	}
 	args["id"] = arg0
-	var arg1 string
-	if tmp, ok := rawArgs["name"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
-		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+	var arg1 model.FileUpdate
+	if tmp, ok := rawArgs["args"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("args"))
+		arg1, err = ec.unmarshalNFileUpdate2skewaxᚋgraphᚋmodelᚐFileUpdate(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
 	}
-	args["name"] = arg1
-	var arg2 string
-	if tmp, ok := rawArgs["contents"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("contents"))
-		arg2, err = ec.unmarshalNString2string(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["contents"] = arg2
+	args["args"] = arg1
 	return args, nil
 }
 
@@ -1462,7 +1457,7 @@ func (ec *executionContext) _Mutation_createFile(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateFile(rctx, fc.Args["name"].(string), fc.Args["contents"].(string))
+		return ec.resolvers.Mutation().CreateFile(rctx, fc.Args["args"].(model.FileCreate))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1533,7 +1528,7 @@ func (ec *executionContext) _Mutation_updateFile(ctx context.Context, field grap
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().UpdateFile(rctx, fc.Args["id"].(string), fc.Args["name"].(string), fc.Args["contents"].(string))
+		return ec.resolvers.Mutation().UpdateFile(rctx, fc.Args["id"].(string), fc.Args["args"].(model.FileUpdate))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -4403,6 +4398,82 @@ func (ec *executionContext) fieldContext___Type_specifiedByURL(ctx context.Conte
 
 // region    **************************** input.gotpl *****************************
 
+func (ec *executionContext) unmarshalInputFileCreate(ctx context.Context, obj interface{}) (model.FileCreate, error) {
+	var it model.FileCreate
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"name", "contents"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Name = data
+		case "contents":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("contents"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Contents = data
+		}
+	}
+
+	return it, nil
+}
+
+func (ec *executionContext) unmarshalInputFileUpdate(ctx context.Context, obj interface{}) (model.FileUpdate, error) {
+	var it model.FileUpdate
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"name", "contents"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "name":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("name"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Name = data
+		case "contents":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("contents"))
+			data, err := ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Contents = data
+		}
+	}
+
+	return it, nil
+}
+
 // endregion **************************** input.gotpl *****************************
 
 // region    ************************** interface.gotpl ***************************
@@ -5305,6 +5376,16 @@ func (ec *executionContext) marshalNFile2ᚖskewaxᚋgraphᚋmodelᚐFile(ctx co
 		return graphql.Null
 	}
 	return ec._File(ctx, sel, v)
+}
+
+func (ec *executionContext) unmarshalNFileCreate2skewaxᚋgraphᚋmodelᚐFileCreate(ctx context.Context, v interface{}) (model.FileCreate, error) {
+	res, err := ec.unmarshalInputFileCreate(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) unmarshalNFileUpdate2skewaxᚋgraphᚋmodelᚐFileUpdate(ctx context.Context, v interface{}) (model.FileUpdate, error) {
+	res, err := ec.unmarshalInputFileUpdate(ctx, v)
+	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNID2string(ctx context.Context, v interface{}) (string, error) {
