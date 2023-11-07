@@ -7,7 +7,7 @@ const Sidebar = () => {
 
   const { isSignedIn } = useAuth()
   const [open, setOpen] = useState(isSignedIn)
-  const [width, setWidth] = useState('300px')
+  const [width, setWidth] = useState('200px')
 
   return (
     <Drawer

@@ -1,6 +1,8 @@
 import { useQuery } from "@apollo/client"
 import { gql } from "../../../../../__generated__/gql"
-import { CircularProgress } from "@mui/material"
+import { Box, CircularProgress, List } from "@mui/material"
+import DirectoryEntry from "./DirectoryEntry"
+import FileEntry from "./FileEntry"
 
 const baseDirectoryQuery = gql(`
 query BaseDirectory {
@@ -10,6 +12,8 @@ query BaseDirectory {
     files {
       id
       name
+      isPBASIC 
+      writable
     }
     directories {
       id
@@ -20,18 +24,29 @@ query BaseDirectory {
 `)
 const FileTree = () => {
   const { data } = useQuery(baseDirectoryQuery)
-  console.log("mounted")
   if (data === undefined) {
     return (
-      <CircularProgress />
+      <Box display='flex' justifyContent='center' alignItems='center' height={1} width={1}>
+        <CircularProgress />
+      </Box>
     )
   }
   return (
-    <div>
+    <List
+      disablePadding
+    >
       {
-        data && data.baseDirectory.name
+        data.baseDirectory.directories.map((directory) =>
+          <DirectoryEntry dir={directory} />
+        )
       }
-    </div>
+      {
+        data.baseDirectory.files.map((file) =>
+          <FileEntry file={file} />
+        )
+      }
+
+    </List>
   )
 }
 
