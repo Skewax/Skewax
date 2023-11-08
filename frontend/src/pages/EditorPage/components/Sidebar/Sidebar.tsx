@@ -1,4 +1,4 @@
-import { Drawer, Toolbar } from "@mui/material"
+import { Box, Drawer, Toolbar } from "@mui/material"
 import { useState } from "react"
 import FileTree from "./components/FileTree"
 import useAuth from "../../../../hooks/useAuth"
@@ -22,9 +22,11 @@ const Sidebar = () => {
         [`& .MuiDrawer-paper`]: { width: width, boxSizing: 'border-box' }
       }}
     >
-      <Toolbar />
+      <Toolbar variant='dense' />
       {isSignedIn &&
-        <FileTree />
+        <Box height={1} display='flex' flexDirection='column' flex-grow={1}>
+          <FileTree />
+        </Box>
       }
     </Drawer>
   )

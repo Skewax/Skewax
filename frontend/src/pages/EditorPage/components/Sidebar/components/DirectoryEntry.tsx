@@ -1,10 +1,11 @@
-import { Box, CircularProgress, Collapse, List, ListItemButton, ListItemIcon, ListItemText, } from "@mui/material";
+import { Box, CircularProgress, Collapse, Divider, List, ListItemButton, ListItemIcon, ListItemText, } from "@mui/material";
 import { ExpandLess, ExpandMore, Folder } from "@mui/icons-material";
 import { useState } from "react";
 import { gql } from "../../../../../__generated__";
 import { useLazyQuery } from "@apollo/client";
 import FileEntry from "./FileEntry";
 import { FileTree_FileFragment } from "../../../../../__generated__/graphql";
+import ContextMenu from "../../../../../components/ContextMenu";
 
 const subfolderQuery = gql(`
 query Subfolder($id: ID!) {
@@ -21,7 +22,26 @@ const DirectoryEntry = ({ dir }: { dir: { id: string, name: string } }) => {
   const [getDirectoryContents, { data }] = useLazyQuery(subfolderQuery)
 
   return (
-    <>
+    <ContextMenu
+      items={[
+        {
+          label: "Create File",
+          onClick: () => { }
+        },
+        {
+          label: "Create Directory",
+          onClick: () => { }
+        },
+        {
+          label: "Rename",
+          onClick: () => { }
+        },
+        {
+          label: "Delete",
+          onClick: () => { }
+        }
+      ]}
+    >
       <ListItemButton
         onClick={() => {
           if (!open) getDirectoryContents({ variables: { id: dir.id } })
@@ -57,9 +77,10 @@ const DirectoryEntry = ({ dir }: { dir: { id: string, name: string } }) => {
                 }
               </>
           }
+          <Divider />
         </List>
       </Collapse>
-    </>
+    </ContextMenu>
   )
 
 }

@@ -4,6 +4,7 @@ import { Box, CircularProgress, List } from "@mui/material"
 import DirectoryEntry from "./DirectoryEntry"
 import FileEntry from "./FileEntry"
 import { DirectoryContentsFragment, FileTree_FileFragment } from "../../../../../__generated__/graphql"
+import ContextMenu from "../../../../../components/ContextMenu"
 
 gql(`
 fragment FileTree_File on File {
@@ -42,21 +43,35 @@ const FileTree = () => {
     )
   }
   return (
-    <List
-      disablePadding
+    <ContextMenu
+      height={1}
+      items={[
+        {
+          label: "Create File",
+          onClick: () => { }
+        },
+        {
+          label: "Create Directory",
+          onClick: () => { }
+        },
+      ]}
     >
-      {
-        data.baseDirectory.directories.map((directory: DirectoryContentsFragment) =>
-          <DirectoryEntry dir={directory} key={directory.id} />
-        )
-      }
-      {
-        data.baseDirectory.files.map((file: FileTree_FileFragment) =>
-          <FileEntry file={file} key={file.id} />
-        )
-      }
+      <List
+        disablePadding
+      >
+        {
+          data.baseDirectory.directories.map((directory: DirectoryContentsFragment) =>
+            <DirectoryEntry dir={directory} key={directory.id} />
+          )
+        }
+        {
+          data.baseDirectory.files.map((file: FileTree_FileFragment) =>
+            <FileEntry file={file} key={file.id} />
+          )
+        }
 
-    </List>
+      </List>
+    </ContextMenu>
   )
 }
 
