@@ -14,7 +14,7 @@ const Sidebar = () => {
       variant='persistent'
       anchor='left'
       open={open}
-      keepMounted={true}
+      // keepMounted={true}
 
       sx={{
         flexShrink: 0,
