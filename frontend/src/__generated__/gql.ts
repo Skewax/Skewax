@@ -14,7 +14,9 @@ import { TypedDocumentNode as DocumentNode } from '@graphql-typed-document-node/
  */
 const documents = {
     "\n  query Me {\n    me {\n      id\n      name\n      email\n      image\n    }\n  }\n\n": types.MeDocument,
-    "\nquery BaseDirectory {\n  baseDirectory {\n    id\n    name\n    files {\n      id\n      name\n      isPBASIC \n      writable\n    }\n    directories {\n      id\n      name\n    }\n  }\n}\n": types.BaseDirectoryDocument,
+    "\nquery Subfolder($id: ID!) {\n  directory(id: $id) {\n    ...FileTree_Directory\n  }\n}\n": types.SubfolderDocument,
+    "\nfragment FileTree_File on File {\n  id\n  name\n  isPBASIC\n  writable\n}\nfragment FileTree_Directory on Directory {\n  id\n  name\n  files {\n    ...FileTree_File\n  }\n  directories {\n    id\n    name\n  }\n}\n": types.FileTree_FileFragmentDoc,
+    "\nquery BaseDirectory {\n  baseDirectory {\n    ...FileTree_Directory\n  }\n}\n": types.BaseDirectoryDocument,
 };
 
 /**
@@ -38,7 +40,15 @@ export function gql(source: "\n  query Me {\n    me {\n      id\n      name\n   
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\nquery BaseDirectory {\n  baseDirectory {\n    id\n    name\n    files {\n      id\n      name\n      isPBASIC \n      writable\n    }\n    directories {\n      id\n      name\n    }\n  }\n}\n"): (typeof documents)["\nquery BaseDirectory {\n  baseDirectory {\n    id\n    name\n    files {\n      id\n      name\n      isPBASIC \n      writable\n    }\n    directories {\n      id\n      name\n    }\n  }\n}\n"];
+export function gql(source: "\nquery Subfolder($id: ID!) {\n  directory(id: $id) {\n    ...FileTree_Directory\n  }\n}\n"): (typeof documents)["\nquery Subfolder($id: ID!) {\n  directory(id: $id) {\n    ...FileTree_Directory\n  }\n}\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\nfragment FileTree_File on File {\n  id\n  name\n  isPBASIC\n  writable\n}\nfragment FileTree_Directory on Directory {\n  id\n  name\n  files {\n    ...FileTree_File\n  }\n  directories {\n    id\n    name\n  }\n}\n"): (typeof documents)["\nfragment FileTree_File on File {\n  id\n  name\n  isPBASIC\n  writable\n}\nfragment FileTree_Directory on Directory {\n  id\n  name\n  files {\n    ...FileTree_File\n  }\n  directories {\n    id\n    name\n  }\n}\n"];
+/**
+ * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function gql(source: "\nquery BaseDirectory {\n  baseDirectory {\n    ...FileTree_Directory\n  }\n}\n"): (typeof documents)["\nquery BaseDirectory {\n  baseDirectory {\n    ...FileTree_Directory\n  }\n}\n"];
 
 export function gql(source: string) {
   return (documents as any)[source] ?? {};

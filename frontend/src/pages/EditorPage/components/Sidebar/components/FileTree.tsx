@@ -3,22 +3,32 @@ import { gql } from "../../../../../__generated__/gql"
 import { Box, CircularProgress, List } from "@mui/material"
 import DirectoryEntry from "./DirectoryEntry"
 import FileEntry from "./FileEntry"
+import { DirectoryContentsFragment, FileTree_FileFragment } from "../../../../../__generated__/graphql"
+
+gql(`
+fragment FileTree_File on File {
+  id
+  name
+  isPBASIC
+  writable
+}
+fragment FileTree_Directory on Directory {
+  id
+  name
+  files {
+    ...FileTree_File
+  }
+  directories {
+    id
+    name
+  }
+}
+`)
 
 const baseDirectoryQuery = gql(`
 query BaseDirectory {
   baseDirectory {
-    id
-    name
-    files {
-      id
-      name
-      isPBASIC 
-      writable
-    }
-    directories {
-      id
-      name
-    }
+    ...FileTree_Directory
   }
 }
 `)
@@ -36,13 +46,13 @@ const FileTree = () => {
       disablePadding
     >
       {
-        data.baseDirectory.directories.map((directory) =>
-          <DirectoryEntry dir={directory} />
+        data.baseDirectory.directories.map((directory: DirectoryContentsFragment) =>
+          <DirectoryEntry dir={directory} key={directory.id} />
         )
       }
       {
-        data.baseDirectory.files.map((file) =>
-          <FileEntry file={file} />
+        data.baseDirectory.files.map((file: FileTree_FileFragment) =>
+          <FileEntry file={file} key={file.id} />
         )
       }
 

@@ -1,7 +1,8 @@
 import { Code, Description } from "@mui/icons-material"
 import { ListItemButton, ListItemIcon, ListItemText } from "@mui/material"
+import { FileTree_FileFragment } from "../../../../../__generated__/graphql"
 
-const FileEntry = ({ file }: { file: { id: string, name: string, isPBASIC: boolean, writable: boolean } }) => {
+const FileEntry = ({ file }: { file: FileTree_FileFragment }) => {
   return (
     <ListItemButton>
       <ListItemIcon>
