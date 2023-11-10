@@ -85,34 +85,7 @@ func (r *mutationResolver) UpdateFile(ctx context.Context, id string, args model
 	}
 
 	// Collect output
-	pbasic := IsPBasic(newFile)
-	outFile := &model.File{
-		ID:        id,
-		Name:      newFile.Name,
-		CreatedAt: newFile.CreatedTime,
-		UpdatedAt: newFile.ModifiedTime,
-		IsPbasic:  pbasic,
-		// Writable:  newFile.Capabilities.CanEdit,
-		// TODO: this should be better later
-	}
-
-	// Download contents if not found and not provided
-	preloads := GetPreloads(ctx)
-
-	if args.Contents != nil {
-		if GetContainsField(preloads, "contents") {
-			contents, err := DownloadFile(driveSrv, id)
-			if err != nil {
-				return nil, err
-			}
-
-			outFile.Contents = *contents
-		}
-	} else {
-		outFile.Contents = *args.Contents
-	}
-
-	return outFile, nil
+	return GetFilePreloaded(driveSrv, newFile, GetPreloads(ctx))
 }
 
 // DeleteFile is the resolver for the deleteFile field.
@@ -252,7 +225,18 @@ func (r *queryResolver) Directory(ctx context.Context, id string) (*model.Direct
 
 // File is the resolver for the file field.
 func (r *queryResolver) File(ctx context.Context, id string) (*model.File, error) {
-	panic(fmt.Errorf("not implemented: File - file"))
+
+	token, err := r.getUserToken(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	driveSrv, err := r.Google.DriveService(token)
+	if err != nil {
+		return nil, err
+	}
+
+	return GetFile(driveSrv, id, GetPreloads(ctx))
 }
 
 // Mutation returns MutationResolver implementation.
