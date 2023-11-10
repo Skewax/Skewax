@@ -69,7 +69,8 @@ const FileTree = () => {
       if (data === null) {
         return
       }
-      const oldBaseDir = cache.readQuery({ query: baseDirectoryQuery })
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const oldBaseDir: any = cache.readQuery({ query: baseDirectoryQuery })
       const newBaseDir = {
         ...oldBaseDir.baseDirectory,
         directories: [
@@ -82,9 +83,9 @@ const FileTree = () => {
       cache.writeQuery(
         {
           query: baseDirectoryQuery,
-        },
-        {
-          baseDirectory: newBaseDir
+          data: {
+            baseDirectory: newBaseDir
+          }
         }
       )
     }
