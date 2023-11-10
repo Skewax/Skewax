@@ -24,10 +24,6 @@ const router = createBrowserRouter([
     path: "/signin",
     element: <SigninPage />
   },
-  {
-    path: "/signout",
-    element: <SignoutPage />
-  }
 ])
 
 const httpLink = createHttpLink({
