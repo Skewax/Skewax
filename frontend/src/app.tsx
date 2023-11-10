@@ -4,6 +4,7 @@ import HomePage from './pages/HomePage'
 import { ThemeProvider, createTheme, useMediaQuery } from '@mui/material'
 import { EditorPage } from './pages/EditorPage'
 import { SigninPage } from './pages/SigninPage'
+import { SignoutPage } from './pages/SignoutPage'
 import { ApolloClient, ApolloLink, InMemoryCache, ApolloProvider, createHttpLink } from "@apollo/client";
 import { setContext } from '@apollo/client/link/context';
 import { useMemo } from 'react'
@@ -22,7 +23,7 @@ const router = createBrowserRouter([
   {
     path: "/signin",
     element: <SigninPage />
-  }
+  },
 ])
 
 const httpLink = createHttpLink({
