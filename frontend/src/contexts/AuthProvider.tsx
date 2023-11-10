@@ -84,6 +84,10 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
       },
       signOut: () => {
         setAuthState({ token: null, session: null })
+	console.log("Signing out")
+	const url=import.meta.env.VITE_LOGOUT_ENDPOINT+"?session="+encodeURIComponent(authState.session)
+	console.log(url);
+	fetch(url)
       },
       requestToken: requestToken,
 

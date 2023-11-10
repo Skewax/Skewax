@@ -1,11 +1,8 @@
 package auth
 import (
-	"errors"
 	"fmt"
 	"net/http"
-	"os"
 	"skewax/db"
-	"time"
 	"gorm.io/gorm"
 )
 
@@ -14,17 +11,24 @@ type SignoutHandler struct
 	DB *gorm.DB
 }
 
-var (
-	redirect=os.getenv("REDIRECT_URI")
-)
-
 func (h *SignoutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	sessionId := r.URL.Query().get("session")
+
+	fmt.Println("I am supposed to be signing people out!")
+
+	sessionId := r.URL.Query().Get("session")
 	session := db.SessionToken{}
 	err := h.DB.First(&session, "id = ?", sessionId).Error
+	
+	fmt.Println("Passed in ID:")
+	fmt.Println(sessionId)
+	
+	fmt.Println("Token found:")
+	fmt.Println(session)
+	
 	if err != nil {
-		fmt.println(err);
+		fmt.Println(err)
 	} else {
-		h.DB.Delete(&session);
+		fmt.Println("Hi! I am not doing my job right now.")
+		h.DB.Delete(&session)
 	}
 }
