@@ -122,7 +122,33 @@ func (r *mutationResolver) DeleteFile(ctx context.Context, id string) (*model.Fi
 
 // CreateDirectory is the resolver for the createDirectory field.
 func (r *mutationResolver) CreateDirectory(ctx context.Context, name string, parentDirectory string) (*model.Directory, error) {
-	panic(fmt.Errorf("not implemented: CreateDirectory - createDirectory"))
+	token, err := r.getUserToken(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	driveSrv, err := r.Google.DriveService(token)
+	if err != nil {
+		return nil, err
+	}
+
+	newDir, err := driveSrv.Files.Create(&drive.File{
+		Name:     name,
+		MimeType: "application/vnd.google-apps.folder",
+		Parents:  []string{parentDirectory},
+	}).Do()
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.Directory{
+		ID:          newDir.Id,
+		Name:        newDir.Name,
+		CreatedAt:   newDir.CreatedTime,
+		UpdatedAt:   newDir.ModifiedTime,
+		Files:       []*model.File{},
+		Directories: []*model.Directory{},
+	}, nil
 }
 
 // DeleteDirectory is the resolver for the deleteDirectory field.

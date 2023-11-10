@@ -23,7 +23,7 @@ const ContextMenu = ({ children, items, ...boxProps }: ContextMenuProps) => {
 
   const menuItems = useMemo(() =>
     items.map((item) => (
-      <MenuItem onClick={item.onClick} disabled={item.disabled}>{item.label}</MenuItem>
+      <MenuItem key={item.label} onClick={item.onClick} disabled={item.disabled}>{item.label}</MenuItem>
     ))
     , [items])
 

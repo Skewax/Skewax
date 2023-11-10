@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client"
+import { useMutation, useQuery } from "@apollo/client"
 import { gql } from "../../../../../__generated__/gql"
 import { Box, CircularProgress, List } from "@mui/material"
 import DirectoryEntry from "./DirectoryEntry"
@@ -33,8 +33,63 @@ query BaseDirectory {
   }
 }
 `)
+
+const createDirectoryMutation = gql(`
+mutation CreateDirectory($name: String!, $parent: ID!) {
+  createDirectory(name: $name, parentDirectory: $parent) {
+    id
+    name
+    files {
+      ...FileTree_File
+    }
+    directories {
+      id
+      name
+      files {
+        id
+        name
+      }
+      directories {
+        id
+        name
+      }
+    }
+  }
+}
+`)
+
+
 const FileTree = () => {
   const { data } = useQuery(baseDirectoryQuery)
+  console.log(data)
+
+  const [createDirectory] = useMutation(createDirectoryMutation, {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    update: (cache: any, { data }: any) => {
+      if (data === null) {
+        return
+      }
+      const oldBaseDir = cache.readQuery({ query: baseDirectoryQuery })
+      const newBaseDir = {
+        ...oldBaseDir.baseDirectory,
+        directories: [
+          ...oldBaseDir.baseDirectory.directories,
+          {
+            ...data.createDirectory,
+          }
+        ]
+      }
+      cache.writeQuery(
+        {
+          query: baseDirectoryQuery,
+        },
+        {
+          baseDirectory: newBaseDir
+        }
+      )
+    }
+  })
+
   if (data === undefined) {
     return (
       <Box display='flex' justifyContent='center' alignItems='center' height={1} width={1}>
@@ -52,7 +107,14 @@ const FileTree = () => {
         },
         {
           label: "Create Directory",
-          onClick: () => { }
+          onClick: () => {
+            createDirectory({
+              variables: {
+                name: "New Test Directory",
+                parent: data.baseDirectory.id
+              }
+            })
+          }
         },
       ]}
     >
