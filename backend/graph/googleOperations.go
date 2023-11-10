@@ -9,6 +9,26 @@ import (
 	"google.golang.org/api/drive/v3"
 )
 
+func IsPBasic(file *drive.File) bool {
+	return strings.HasSuffix(file.Name, ".pbasic")
+}
+
+func DownloadFile(srv *drive.Service, id string) (*string, error) {
+	download, err := srv.Files.Get(id).Download()
+	if err != nil {
+		return nil, err
+	}
+	defer download.Body.Close()
+
+	content, err := io.ReadAll(download.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	str := string(content)
+	return &str, nil
+}
+
 func GetDirectory(srv *drive.Service, id string, fields []string) (*model.Directory, error) {
 	baseDirQuery, err := srv.Files.Get(id).Do()
 	if err != nil {
@@ -28,7 +48,7 @@ func GetDirectory(srv *drive.Service, id string, fields []string) (*model.Direct
 	fileFields := GetNestedFields(fields, "files")
 
 	for _, file := range filesQuery.Files {
-		pbasic := strings.HasSuffix(file.Name, ".pbasic")
+		pbasic := IsPBasic(file)
 		fileObj := model.File{
 			ID:        file.Id,
 			Name:      file.Name,

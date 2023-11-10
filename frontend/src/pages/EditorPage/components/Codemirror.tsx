@@ -34,9 +34,9 @@ const Codemirror = () => {
         codeFolding(),
         foldGutter(),
         keymap.of([
-        ...defaultKeymap,
-        ...lintKeymap,
-        ...foldKeymap
+          ...defaultKeymap,
+          ...lintKeymap,
+          ...foldKeymap
         ]),
         
         pbasic()

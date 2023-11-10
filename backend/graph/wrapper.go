@@ -4,13 +4,20 @@ import (
 	"context"
 	"fmt"
 	"skewax/db"
+	"skewax/google"
 	"strings"
 
 	"github.com/99designs/gqlgen/graphql"
 	"golang.org/x/oauth2"
+	"gorm.io/gorm"
 )
 
-func (r *queryResolver) getUserToken(ctx context.Context) (*oauth2.Token, error) {
+type Databased interface {
+	GetGoogle() *google.GoogleProvider
+	GetDB() *gorm.DB
+}
+
+func getUserTokenGeneric(r Databased, ctx context.Context) (*oauth2.Token, error) {
 	ctxUser := ctx.Value("user")
 	var user db.AuthUser
 	switch ctxUser.(type) {
@@ -20,12 +27,28 @@ func (r *queryResolver) getUserToken(ctx context.Context) (*oauth2.Token, error)
 		return nil, fmt.Errorf("user not found")
 	}
 
-	token, err := r.Google.VerifyUser(user, r.DB)
+	token, err := r.GetGoogle().VerifyUser(user, r.GetDB())
 	if err != nil {
 		return nil, err
 	}
 
 	return token, nil
+}
+
+func (r *queryResolver) GetDB() *gorm.DB                   { return r.DB }
+func (r *queryResolver) GetGoogle() *google.GoogleProvider { return r.Google }
+
+func (r *queryResolver) getUserToken(ctx context.Context) (*oauth2.Token, error) {
+	token, err := getUserTokenGeneric(r, ctx)
+	return token, err
+}
+
+func (r *mutationResolver) GetDB() *gorm.DB                   { return r.DB }
+func (r *mutationResolver) GetGoogle() *google.GoogleProvider { return r.Google }
+
+func (r *mutationResolver) getUserToken(ctx context.Context) (*oauth2.Token, error) {
+	token, err := getUserTokenGeneric(r, ctx)
+	return token, err
 }
 
 func GetPreloads(ctx context.Context) []string {
