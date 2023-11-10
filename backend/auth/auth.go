@@ -40,7 +40,7 @@ func GenerateJWT(userId string) (string, error) {
 
 func ParseJWT(tokenStr string) (string, error) {
 	claims := Claims{}
-	_, err := jwt.ParseWithClaims(tokenStr, &claims, func(t *jwt.Token) (interface{}, error) {
+	jwt, err := jwt.ParseWithClaims(tokenStr, &claims, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("bad token")
 		}
@@ -48,6 +48,9 @@ func ParseJWT(tokenStr string) (string, error) {
 	})
 	if err != nil {
 		return "", err
+	}
+	if !jwt.Valid {
+		return "", fmt.Errorf("bad token")
 	}
 	return claims.UserId, nil
 }
@@ -70,13 +73,15 @@ func Middleware(orm *gorm.DB) func(http.Handler) http.Handler {
 				return
 			}
 
-			user := orm.First(&db.AuthUser{}, "id = ?", userId)
-			if user.Error != nil {
-				http.Error(w, `{"errors":[ { "message": "authentication error" }, { "message": "`+user.Error.Error()+`" } ]}`, http.StatusOK)
+			user := db.AuthUser{}
+
+			err = orm.First(&user, "id = ?", userId).Error
+			if err != nil {
+				http.Error(w, `{"errors":[ { "message": "authentication error" }, { "message": "`+err.Error()+`" } ]}`, http.StatusOK)
 				return
 			}
 
-			ctx := context.WithValue(r.Context(), "user", &user)
+			ctx := context.WithValue(r.Context(), "user", user)
 			r = r.WithContext(ctx)
 			next.ServeHTTP(w, r)
 		})

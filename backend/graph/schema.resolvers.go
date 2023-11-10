@@ -7,8 +7,9 @@ package graph
 import (
 	"context"
 	"fmt"
-	"skewax/db"
 	"skewax/graph/model"
+
+	drive "google.golang.org/api/drive/v3"
 )
 
 // CreateFile is the resolver for the createFile field.
@@ -58,13 +59,12 @@ func (r *mutationResolver) MoveDirectory(ctx context.Context, id string, directo
 
 // Me is the resolver for the me field.
 func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
-	//THIS IS PURELY FOR TESTING PURPOSES
-	var user db.AuthUser
-	err := r.DB.First(&user).Error
+	token, err := r.getUserToken(ctx)
 	if err != nil {
 		return nil, err
 	}
-	uSrv, err := r.Google.UserService(user.GetToken())
+
+	uSrv, err := r.Google.UserService(token)
 	if err != nil {
 		return nil, err
 	}
@@ -83,12 +83,52 @@ func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
 
 // BaseDirectory is the resolver for the baseDirectory field.
 func (r *queryResolver) BaseDirectory(ctx context.Context) (*model.Directory, error) {
-	panic(fmt.Errorf("not implemented: BaseDirectory - baseDirectory"))
+	token, err := r.getUserToken(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	driveSrv, err := r.Google.DriveService(token)
+	if err != nil {
+		return nil, err
+	}
+
+	baseDirectories, err := driveSrv.Files.List().Q("mimeType = 'application/vnd.google-apps.folder' and name = 'Skewax'").Do()
+	if err != nil {
+		return nil, err
+	}
+	var baseDir *drive.File
+
+	// If the base directory doesn't exist, create it
+	if len(baseDirectories.Files) == 0 {
+		baseDir, err = driveSrv.Files.Create(&drive.File{
+			Name:     "Skewax",
+			MimeType: "application/vnd.google-apps.folder",
+		}).Do()
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		baseDir = baseDirectories.Files[0]
+	}
+
+	fields := GetPreloads(ctx)
+	return GetDirectory(driveSrv, baseDir.Id, fields)
 }
 
 // Directory is the resolver for the directory field.
 func (r *queryResolver) Directory(ctx context.Context, id string) (*model.Directory, error) {
-	panic(fmt.Errorf("not implemented: Directory - directory"))
+	token, err := r.getUserToken(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	driveSrv, err := r.Google.DriveService(token)
+	if err != nil {
+		return nil, err
+	}
+	fields := GetPreloads(ctx)
+	return GetDirectory(driveSrv, id, fields)
 }
 
 // File is the resolver for the file field.

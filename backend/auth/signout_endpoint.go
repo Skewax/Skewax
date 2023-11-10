@@ -3,11 +3,11 @@ import (
 	"fmt"
 	"net/http"
 	"skewax/db"
+
 	"gorm.io/gorm"
 )
 
-type SignoutHandler struct
-{
+type SignoutHandler struct {
 	DB *gorm.DB
 }
 

@@ -6,10 +6,12 @@ const config: CodegenConfig = {
   documents: ['src/**/*.{ts,tsx}'],
   generates: {
     './src/__generated__/': {
-      preset: 'client',
-      plugins: [],
+      preset: 'client-preset',
+      plugins: [
+      ],
       presetConfig: {
         gqlTagName: 'gql',
+        fragmentMasking: false
       }
     }
   },
