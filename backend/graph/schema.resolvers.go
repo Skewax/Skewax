@@ -149,8 +149,6 @@ func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
 
 // BaseDirectory is the resolver for the baseDirectory field.
 func (r *queryResolver) BaseDirectory(ctx context.Context) (*model.Directory, error) {
-	//TODO: verify that base directory exists, if not create it
-
 	token, err := r.getUserToken(ctx)
 	if err != nil {
 		return nil, err
@@ -186,7 +184,17 @@ func (r *queryResolver) BaseDirectory(ctx context.Context) (*model.Directory, er
 
 // Directory is the resolver for the directory field.
 func (r *queryResolver) Directory(ctx context.Context, id string) (*model.Directory, error) {
-	panic(fmt.Errorf("not implemented: Directory - directory"))
+	token, err := r.getUserToken(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	driveSrv, err := r.Google.DriveService(token)
+	if err != nil {
+		return nil, err
+	}
+	fields := GetPreloads(ctx)
+	return GetDirectory(driveSrv, id, fields)
 }
 
 // File is the resolver for the file field.

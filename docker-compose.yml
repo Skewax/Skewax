@@ -18,7 +18,7 @@ services:
     env_file: .server.env
     depends_on:
       - db
-      - redis
+      # - redis
     volumes:
       - ./backend:/opt/app
       - ./shared:/opt/shared
@@ -27,9 +27,9 @@ services:
     env_file: .db.env
     ports:
       - 5432:5432
-  redis:
-    image: redis:alpine
-    env_file: .redis.env
-    ports:
-      - 6379:6379
+  # redis:
+  #   image: redis:alpine
+  #   env_file: .redis.env
+  #   ports:
+  #     - 6379:6379
   
