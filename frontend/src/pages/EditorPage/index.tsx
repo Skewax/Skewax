@@ -13,10 +13,10 @@ export const EditorPage = () => {
     <CommandsProvider>
       <Box display='flex'>
         <Navbar />
-        <Box display='flex'>
+        <Box display='flex' flexDirection='row' height={1}>
           <Sidebar />
+          <Codemirror />
         </Box>
-        <Codemirror />
       </Box>
     </CommandsProvider>
 

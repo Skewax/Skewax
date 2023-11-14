@@ -3,8 +3,10 @@ import { gql } from "../../../../../__generated__/gql"
 import { Box, CircularProgress, List } from "@mui/material"
 import DirectoryEntry from "./DirectoryEntry"
 import FileEntry from "./FileEntry"
-import { DirectoryContentsFragment, FileTree_FileFragment } from "../../../../../__generated__/graphql"
+import { DirectoryContentsFragment, FileTree_DirectoryFragment, FileTree_FileFragment } from "../../../../../__generated__/graphql"
 import ContextMenu from "../../../../../components/ContextMenu"
+// import CreateFileEntry from "./CreateFileEntry"
+// import CreateDirectoryEntry from "./CreateDirectoryEntry"
 
 gql(`
 fragment FileTree_File on File {
@@ -58,10 +60,8 @@ mutation CreateDirectory($name: String!, $parent: ID!) {
 }
 `)
 
-
 const FileTree = () => {
   const { data } = useQuery(baseDirectoryQuery)
-  console.log(data)
 
   const [createDirectory] = useMutation(createDirectoryMutation, {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -136,6 +136,8 @@ const FileTree = () => {
       </List>
     </ContextMenu>
   )
+  // <CreateFileEntry />
+  // <CreateDirectoryEntry />
 }
 
 export default FileTree
