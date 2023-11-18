@@ -93,7 +93,9 @@ const Navbar = () => {
             <Searchbar />
           </Grid>
           <Grid item xs={2} >
-            {isSignedIn ? <IconSegment /> : <Button onClick={signIn}>Sign In</Button>}
+            {
+              isSignedIn ? <IconSegment /> : <Button fullWidth style={{ color: "white" }} onClick={signIn}>Sign In</Button>
+            }
           </Grid>
         </Grid>
       </Toolbar>
