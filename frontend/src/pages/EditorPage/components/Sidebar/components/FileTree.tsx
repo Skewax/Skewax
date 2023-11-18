@@ -59,6 +59,13 @@ mutation CreateDirectory($name: String!, $parent: ID!) {
       }
     }
   }
+}`)
+
+const createFileMutation = gql(`
+mutation CreateFile($name: String!, $contents: String!, $parent: String!) {
+  createFile(args: {name: $name, contents: $contents, parent: $parent}) {
+    ...FileTree_File
+  }
 }
 `)
 
@@ -96,6 +103,30 @@ const FileTree = () => {
     }
   })
 
+  const [createFile] = useMutation(createFileMutation, {
+    update: (cache, {data}, {variables}) => {
+
+      if (data === null || data === undefined) return
+      if (variables === null) return
+
+      const dir: any = cache.readQuery({ 
+        query: baseDirectoryQuery
+      })
+
+      const newDir = {
+        ...dir.baseDirectory,
+        files: [
+          ...dir.baseDirectory.files,
+          data.createFile
+        ]
+      }
+
+      cache.writeQuery({
+        query: baseDirectoryQuery,
+        data: { baseDirectory: newDir as any } 
+      })
+    }
+  });
 
   if (data === undefined) {
     return (
@@ -104,8 +135,6 @@ const FileTree = () => {
       </Box>
     )
   }
-
-
 
   return (
     <ContextMenu
@@ -121,6 +150,16 @@ const FileTree = () => {
             setCreatingDirectory(true)
           }
         },
+        {
+          label: "Create File named Bob",
+          onClick: () => {createFile({
+            variables: {
+              parent: data.baseDirectory.id,
+              name: "bob.pbasic", 
+              contents: "bob was here!"
+            }
+          })}
+        }
       ]}
     >
       <List

@@ -24,6 +24,7 @@ type File struct {
 type FileCreate struct {
 	Name     string `json:"name"`
 	Contents string `json:"contents"`
+	Parent   string `json:"parent"`
 }
 
 type FileUpdate struct {

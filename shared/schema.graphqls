@@ -24,6 +24,7 @@ type File {
 input FileCreate {
   name: String!
   contents: String!
+  parent: String!
 }
 
 input FileUpdate {

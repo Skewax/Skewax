@@ -1,5 +1,7 @@
 package graph
 
+//go run github.com/99designs/gqlgen generate
+
 import (
 	"context"
 	"fmt"

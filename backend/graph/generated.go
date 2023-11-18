@@ -527,6 +527,7 @@ type File {
 input FileCreate {
   name: String!
   contents: String!
+  parent: String!
 }
 
 input FileUpdate {
@@ -4405,7 +4406,7 @@ func (ec *executionContext) unmarshalInputFileCreate(ctx context.Context, obj in
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"name", "contents"}
+	fieldsInOrder := [...]string{"name", "contents", "parent"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -4430,6 +4431,15 @@ func (ec *executionContext) unmarshalInputFileCreate(ctx context.Context, obj in
 				return it, err
 			}
 			it.Contents = data
+		case "parent":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("parent"))
+			data, err := ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+			it.Parent = data
 		}
 	}
 
