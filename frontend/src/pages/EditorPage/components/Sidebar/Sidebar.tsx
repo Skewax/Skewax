@@ -19,7 +19,10 @@ const Sidebar = () => {
       sx={{
         flexShrink: 0,
         width: width,
-        [`& .MuiDrawer-paper`]: { width: width, boxSizing: 'border-box' }
+        [`& .MuiDrawer-paper`]: {
+          width: width,
+          boxSizing: 'border-box'
+        }
       }}
     >
       <Toolbar variant='dense' />

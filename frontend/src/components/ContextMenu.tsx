@@ -56,6 +56,7 @@ const ContextMenu = ({ children, items, ...boxProps }: ContextMenuProps) => {
             : undefined
         }
         onClose={() => { setContextMenu(null) }}
+        onClick={() => { setContextMenu(null) }}
 
       >
         {menuItems}

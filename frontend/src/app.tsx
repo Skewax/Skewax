@@ -9,10 +9,15 @@ import { setContext } from '@apollo/client/link/context';
 import { useMemo } from 'react'
 import useAuth from './hooks/useAuth'
 import { onError } from "@apollo/client/link/error";
+import { DefaultRedirect } from './pages/DefaultRedirect'
 
 const router = createBrowserRouter([
   {
     path: "/",
+    element: <DefaultRedirect />
+  },
+  {
+    path: "/about",
     element: <HomePage />
   },
   {

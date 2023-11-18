@@ -5,6 +5,8 @@ import DirectoryEntry from "./DirectoryEntry"
 import FileEntry from "./FileEntry"
 import { DirectoryContentsFragment, FileTree_DirectoryFragment, FileTree_FileFragment } from "../../../../../__generated__/graphql"
 import ContextMenu from "../../../../../components/ContextMenu"
+import { useEffect, useState } from "react"
+import DirectoryEntryEditor from "./DirectoryEntryEditor"
 // import CreateFileEntry from "./CreateFileEntry"
 // import CreateDirectoryEntry from "./CreateDirectoryEntry"
 
@@ -61,6 +63,9 @@ mutation CreateDirectory($name: String!, $parent: ID!) {
 `)
 
 const FileTree = () => {
+  // const [creatingFile, setCreatingFile] = useState(false)
+  const [creatingDirectory, setCreatingDirectory] = useState(false)
+
   const { data } = useQuery(baseDirectoryQuery)
 
   const [createDirectory] = useMutation(createDirectoryMutation, {
@@ -91,6 +96,11 @@ const FileTree = () => {
     }
   })
 
+
+  useEffect(() => {
+    console.log(creatingDirectory)
+  }, [creatingDirectory])
+
   if (data === undefined) {
     return (
       <Box display='flex' justifyContent='center' alignItems='center' height={1} width={1}>
@@ -98,6 +108,9 @@ const FileTree = () => {
       </Box>
     )
   }
+
+
+
   return (
     <ContextMenu
       height={1}
@@ -109,12 +122,7 @@ const FileTree = () => {
         {
           label: "Create Directory",
           onClick: () => {
-            createDirectory({
-              variables: {
-                name: "New Test Directory",
-                parent: data.baseDirectory.id
-              }
-            })
+            setCreatingDirectory(true)
           }
         },
       ]}
@@ -132,12 +140,26 @@ const FileTree = () => {
             <FileEntry file={file} key={file.id} />
           )
         }
+        {creatingDirectory &&
+          <DirectoryEntryEditor
+            defaultName={"Untitled Folder"}
+            onReturn={(name) => {
+              setCreatingDirectory(false)
+              createDirectory({
+                variables: {
+                  name,
+                  parent: data.baseDirectory.id
+                }
+              })
+            }}
+            onCancel={() => setCreatingDirectory(false)}
+          />
+        }
 
       </List>
     </ContextMenu>
   )
   // <CreateFileEntry />
-  // <CreateDirectoryEntry />
 }
 
 export default FileTree
