@@ -1,4 +1,4 @@
-import { useQuery } from "@apollo/client"
+import { useMutation, useQuery } from "@apollo/client"
 import { gql } from "../../../../../__generated__/gql"
 import { Box, CircularProgress, List } from "@mui/material"
 import DirectoryEntry from "./DirectoryEntry"
@@ -33,8 +33,58 @@ query BaseDirectory {
   }
 }
 `)
+
+const directoryQuery = gql(`
+query Directory($id: ID!) {
+  directory(id: $id) {
+    ...FileTree_Directory
+  }
+}
+`)
+
+const createFileMutation = gql(`
+mutation CreateFile($name: String!, $contents: String!, $parent: String!) {
+  createFile(args: {name: $name, contents: $contents, parent: $parent}) {
+    ...FileTree_File
+  }
+}
+`)
+
 const FileTree = () => {
   const { data } = useQuery(baseDirectoryQuery)
+  const [createFile] = useMutation(createFileMutation, {
+    update: (cache, {data}, {variables}) => {
+
+      console.log('updating')
+      console.log(variables)
+
+      if (data === null || data === undefined) return
+      if (variables === null) return
+
+      const dir: any = cache.readQuery({ 
+        query: directoryQuery, 
+        variables: { id: variables?.parent as string } 
+      })
+
+      console.log(dir)
+
+      const newDir = {
+        ...dir.directory,
+        files: [
+          ...dir.directory.files,
+          data.createFile
+        ]
+      }
+      
+      console.log(newDir)
+
+      cache.writeQuery({
+        query: directoryQuery, 
+        variables: { id: variables?.parent as string },
+        data: { directory: newDir as any } 
+      })
+    }
+  });
   if (data === undefined) {
     return (
       <Box display='flex' justifyContent='center' alignItems='center' height={1} width={1}>
@@ -54,6 +104,16 @@ const FileTree = () => {
           label: "Create Directory",
           onClick: () => { }
         },
+        {
+          label: "Create File named Bob",
+          onClick: () => {createFile({
+            variables: {
+              parent: data.baseDirectory.id,
+              name: "bob.pbasic", 
+              contents: "bob was here!"
+            }
+          })}
+        }
       ]}
     >
       <List

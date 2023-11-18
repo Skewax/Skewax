@@ -29,6 +29,7 @@ func (r *mutationResolver) CreateFile(ctx context.Context, args model.FileCreate
 	newFile, err := driveSrv.Files.Create(&drive.File{
 		Name:     args.Name,
 		MimeType: "text/plain",
+		Parents:  []string{args.Parent},
 	}).Media(strings.NewReader(args.Contents)).Do()
 	if err != nil {
 		return nil, err
@@ -199,7 +200,6 @@ func (r *queryResolver) Directory(ctx context.Context, id string) (*model.Direct
 
 // File is the resolver for the file field.
 func (r *queryResolver) File(ctx context.Context, id string) (*model.File, error) {
-
 	token, err := r.getUserToken(ctx)
 	if err != nil {
 		return nil, err
