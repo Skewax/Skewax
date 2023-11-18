@@ -7,7 +7,7 @@ const Sidebar = () => {
 
   const { isSignedIn } = useAuth()
   const [open, setOpen] = useState(isSignedIn)
-  const [width, setWidth] = useState('200px')
+  const [width, setWidth] = useState('250px')
 
   return (
     <Drawer
@@ -19,7 +19,10 @@ const Sidebar = () => {
       sx={{
         flexShrink: 0,
         width: width,
-        [`& .MuiDrawer-paper`]: { width: width, boxSizing: 'border-box' }
+        [`& .MuiDrawer-paper`]: {
+          width: width,
+          boxSizing: 'border-box'
+        }
       }}
     >
       <Toolbar variant='dense' />

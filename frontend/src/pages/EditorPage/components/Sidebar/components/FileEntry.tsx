@@ -3,7 +3,13 @@ import { ListItemButton, ListItemIcon, ListItemText } from "@mui/material"
 import { FileTree_FileFragment } from "../../../../../__generated__/graphql"
 import ContextMenu from "../../../../../components/ContextMenu"
 
-const FileEntry = ({ file }: { file: FileTree_FileFragment }) => {
+interface FileEntryProps {
+  file: FileTree_FileFragment
+}
+
+const FileEntry = ({ file }: FileEntryProps) => {
+
+
   return (
     <ContextMenu
       items={[
@@ -22,7 +28,7 @@ const FileEntry = ({ file }: { file: FileTree_FileFragment }) => {
         {
           label: "Delete",
           onClick: () => { }
-        }
+        },
       ]}
     >
 

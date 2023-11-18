@@ -8,18 +8,111 @@ import (
 	"context"
 	"fmt"
 	"skewax/graph/model"
+	"strings"
 
 	drive "google.golang.org/api/drive/v3"
 )
 
 // CreateFile is the resolver for the createFile field.
-func (r *mutationResolver) CreateFile(ctx context.Context, name string, contents string) (*model.File, error) {
-	panic(fmt.Errorf("not implemented: CreateFile - createFile"))
+func (r *mutationResolver) CreateFile(ctx context.Context, args model.FileCreate) (*model.File, error) {
+	// Get services
+	token, err := r.getUserToken(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	driveSrv, err := r.Google.DriveService(token)
+	if err != nil {
+		return nil, err
+	}
+
+	newFile, err := driveSrv.Files.Create(&drive.File{
+		Name:     args.Name,
+		MimeType: "text/plain",
+	}).Media(strings.NewReader(args.Contents)).Do()
+	if err != nil {
+		return nil, err
+	}
+
+	pbasic := IsPBasic(newFile)
+	return &model.File{
+		ID:        newFile.Id,
+		Name:      args.Name,
+		Contents:  args.Contents,
+		CreatedAt: newFile.CreatedTime,
+		UpdatedAt: newFile.ModifiedTime,
+		IsPbasic:  pbasic,
+	}, nil
 }
 
 // UpdateFile is the resolver for the updateFile field.
-func (r *mutationResolver) UpdateFile(ctx context.Context, id string, name string, contents string) (*model.File, error) {
-	panic(fmt.Errorf("not implemented: UpdateFile - updateFile"))
+func (r *mutationResolver) UpdateFile(ctx context.Context, id string, args model.FileUpdate) (*model.File, error) {
+	// Get services
+	token, err := r.getUserToken(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	driveSrv, err := r.Google.DriveService(token)
+	if err != nil {
+		return nil, err
+	}
+
+	existingFile, err := driveSrv.Files.Get(id).Do()
+	if err != nil {
+		return nil, err
+	}
+
+	// Build update call
+	fileReq := drive.File{
+		MimeType: "text/plain",
+	}
+
+	if args.Name != nil {
+		fileReq.Name = existingFile.Name
+	}
+
+	updateCall := driveSrv.Files.Update(id, &fileReq)
+
+	if args.Contents != nil {
+		updateCall = updateCall.Media(strings.NewReader(*args.Contents))
+	}
+
+	// Execute update call
+	newFile, err := updateCall.Do()
+	if err != nil {
+		return nil, err
+	}
+
+	// Collect output
+	pbasic := IsPBasic(newFile)
+	outFile := &model.File{
+		ID:        id,
+		Name:      newFile.Name,
+		CreatedAt: newFile.CreatedTime,
+		UpdatedAt: newFile.ModifiedTime,
+		IsPbasic:  pbasic,
+		// Writable:  newFile.Capabilities.CanEdit,
+		// TODO: this should be better later
+	}
+
+	// Download contents if not found and not provided
+	preloads := GetPreloads(ctx)
+
+	if args.Contents != nil {
+		if GetContainsField(preloads, "contents") {
+			contents, err := DownloadFile(driveSrv, id)
+			if err != nil {
+				return nil, err
+			}
+
+			outFile.Contents = *contents
+		}
+	} else {
+		outFile.Contents = *args.Contents
+	}
+
+	return outFile, nil
 }
 
 // DeleteFile is the resolver for the deleteFile field.
@@ -29,7 +122,33 @@ func (r *mutationResolver) DeleteFile(ctx context.Context, id string) (*model.Fi
 
 // CreateDirectory is the resolver for the createDirectory field.
 func (r *mutationResolver) CreateDirectory(ctx context.Context, name string, parentDirectory string) (*model.Directory, error) {
-	panic(fmt.Errorf("not implemented: CreateDirectory - createDirectory"))
+	token, err := r.getUserToken(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	driveSrv, err := r.Google.DriveService(token)
+	if err != nil {
+		return nil, err
+	}
+
+	newDir, err := driveSrv.Files.Create(&drive.File{
+		Name:     name,
+		MimeType: "application/vnd.google-apps.folder",
+		Parents:  []string{parentDirectory},
+	}).Do()
+	if err != nil {
+		return nil, err
+	}
+
+	return &model.Directory{
+		ID:          newDir.Id,
+		Name:        newDir.Name,
+		CreatedAt:   newDir.CreatedTime,
+		UpdatedAt:   newDir.ModifiedTime,
+		Files:       []*model.File{},
+		Directories: []*model.Directory{},
+	}, nil
 }
 
 // DeleteDirectory is the resolver for the deleteDirectory field.
