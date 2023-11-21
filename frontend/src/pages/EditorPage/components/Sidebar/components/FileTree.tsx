@@ -3,9 +3,9 @@ import { gql } from "../../../../../__generated__/gql"
 import { Box, CircularProgress, List } from "@mui/material"
 import DirectoryEntry from "./DirectoryEntry"
 import FileEntry from "./FileEntry"
-import { DirectoryContentsFragment, FileTree_DirectoryFragment, FileTree_FileFragment } from "../../../../../__generated__/graphql"
+import { FileTree_FileFragment } from "../../../../../__generated__/graphql"
 import ContextMenu from "../../../../../components/ContextMenu"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import DirectoryEntryEditor from "./DirectoryEntryEditor"
 // import CreateFileEntry from "./CreateFileEntry"
 // import CreateDirectoryEntry from "./CreateDirectoryEntry"
@@ -62,7 +62,7 @@ mutation CreateDirectory($name: String!, $parent: ID!) {
 }`)
 
 const createFileMutation = gql(`
-mutation CreateFile($name: String!, $contents: String!, $parent: String!) {
+mutation CreateFileInBase($name: String!, $contents: String!, $parent: String!) {
   createFile(args: {name: $name, contents: $contents, parent: $parent}) {
     ...FileTree_File
   }
@@ -103,7 +103,7 @@ const FileTree = () => {
     }
   })
 
-  const [createFile] = useMutation(createFileMutation, {
+  const [createFileInBase] = useMutation(createFileMutation, {
     update: (cache, {data}, {variables}) => {
 
       if (data === null || data === undefined) return
@@ -126,8 +126,8 @@ const FileTree = () => {
         data: { baseDirectory: newDir as any } 
       })
     }
-  });
-
+  })
+  
   if (data === undefined) {
     return (
       <Box display='flex' justifyContent='center' alignItems='center' height={1} width={1}>
@@ -152,7 +152,7 @@ const FileTree = () => {
         },
         {
           label: "Create File named Bob",
-          onClick: () => {createFile({
+          onClick: () => {createFileInBase({
             variables: {
               parent: data.baseDirectory.id,
               name: "bob.pbasic", 
@@ -166,7 +166,7 @@ const FileTree = () => {
         disablePadding
       >
         {
-          data.baseDirectory.directories.map((directory: DirectoryContentsFragment) =>
+          data.baseDirectory.directories.map((directory: any) =>
             <DirectoryEntry dir={directory} key={directory.id} />
           )
         }
