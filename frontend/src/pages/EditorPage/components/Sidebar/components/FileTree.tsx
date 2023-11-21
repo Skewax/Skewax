@@ -34,16 +34,8 @@ query BaseDirectory {
 }
 `)
 
-const directoryQuery = gql(`
-query Directory($id: ID!) {
-  directory(id: $id) {
-    ...FileTree_Directory
-  }
-}
-`)
-
 const createFileMutation = gql(`
-mutation CreateFile($name: String!, $contents: String!, $parent: String!) {
+mutation CreateFileInBase($name: String!, $contents: String!, $parent: String!) {
   createFile(args: {name: $name, contents: $contents, parent: $parent}) {
     ...FileTree_File
   }
@@ -52,7 +44,7 @@ mutation CreateFile($name: String!, $contents: String!, $parent: String!) {
 
 const FileTree = () => {
   const { data } = useQuery(baseDirectoryQuery)
-  const [createFile] = useMutation(createFileMutation, {
+  const [createFileInBase] = useMutation(createFileMutation, {
     update: (cache, {data}, {variables}) => {
 
       console.log('updating')
@@ -62,16 +54,15 @@ const FileTree = () => {
       if (variables === null) return
 
       const dir: any = cache.readQuery({ 
-        query: directoryQuery, 
-        variables: { id: variables?.parent as string } 
+        query: baseDirectoryQuery
       })
 
       console.log(dir)
 
       const newDir = {
-        ...dir.directory,
+        ...dir.baseDirectory,
         files: [
-          ...dir.directory.files,
+          ...dir.baseDirectory.files,
           data.createFile
         ]
       }
@@ -79,12 +70,12 @@ const FileTree = () => {
       console.log(newDir)
 
       cache.writeQuery({
-        query: directoryQuery, 
-        variables: { id: variables?.parent as string },
-        data: { directory: newDir as any } 
+        query: baseDirectoryQuery,
+        data: { baseDirectory: newDir as any } 
       })
     }
-  });
+  })
+  
   if (data === undefined) {
     return (
       <Box display='flex' justifyContent='center' alignItems='center' height={1} width={1}>
@@ -92,6 +83,7 @@ const FileTree = () => {
       </Box>
     )
   }
+
   return (
     <ContextMenu
       height={1}
@@ -106,7 +98,7 @@ const FileTree = () => {
         },
         {
           label: "Create File named Bob",
-          onClick: () => {createFile({
+          onClick: () => {createFileInBase({
             variables: {
               parent: data.baseDirectory.id,
               name: "bob.pbasic", 
