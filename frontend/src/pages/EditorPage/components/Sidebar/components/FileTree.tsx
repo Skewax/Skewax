@@ -7,6 +7,7 @@ import { FileTree_FileFragment } from "../../../../../__generated__/graphql"
 import ContextMenu from "../../../../../components/ContextMenu"
 import { useState } from "react"
 import DirectoryEntryEditor from "./DirectoryEntryEditor"
+import FileEntryEditor from "./FileEntryEditor"
 // import CreateFileEntry from "./CreateFileEntry"
 // import CreateDirectoryEntry from "./CreateDirectoryEntry"
 
@@ -70,7 +71,7 @@ mutation CreateFileInBase($name: String!, $contents: String!, $parent: String!) 
 `)
 
 const FileTree = () => {
-  // const [creatingFile, setCreatingFile] = useState(false)
+  const [creatingFile, setCreatingFile] = useState(false)
   const [creatingDirectory, setCreatingDirectory] = useState(false)
 
   const { data } = useQuery(baseDirectoryQuery)
@@ -87,9 +88,7 @@ const FileTree = () => {
         ...oldBaseDir.baseDirectory,
         directories: [
           ...oldBaseDir.baseDirectory.directories,
-          {
-            ...data.createDirectory,
-          }
+          data.createDirectory
         ]
       }
       cache.writeQuery(
@@ -142,12 +141,25 @@ const FileTree = () => {
       items={[
         {
           label: "Create File",
-          onClick: () => { }
+          onClick: () => { 
+            setCreatingFile(true)
+          }
         },
         {
           label: "Create Directory",
           onClick: () => {
             setCreatingDirectory(true)
+          }
+        },
+        {
+          label: "Create Directory named heck",
+          onClick: () => {
+            createDirectory({
+              variables: {
+                name: "heck",
+                parent: data.baseDirectory.id
+              }
+            })
           }
         },
         {
@@ -188,6 +200,22 @@ const FileTree = () => {
               })
             }}
             onCancel={() => setCreatingDirectory(false)}
+          />
+        }
+        {creatingFile && 
+          <FileEntryEditor
+            defaultName={"New File"}
+            onReturn={(name) => {
+              setCreatingFile(false);
+              createFileInBase({
+                variables: {
+                  parent: data.baseDirectory.id,
+                  name,
+                  contents: ""
+                }
+              })
+            }}
+            onCancel={() => setCreatingFile(false)}
           />
         }
 

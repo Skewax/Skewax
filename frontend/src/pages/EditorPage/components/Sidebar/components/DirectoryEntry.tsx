@@ -6,6 +6,7 @@ import { useLazyQuery, useMutation } from "@apollo/client";
 import FileEntry from "./FileEntry";
 import { FileTree_FileFragment } from "../../../../../__generated__/graphql";
 import ContextMenu from "../../../../../components/ContextMenu";
+import FileEntryEditor from "./FileEntryEditor";
 
 const subfolderQuery = gql(`
 query Subfolder($id: ID!) {
@@ -24,6 +25,8 @@ mutation CreateFile($name: String!, $contents: String!, $parent: String!) {
 `)
 
 const DirectoryEntry = ({ dir }: { dir: { id: string, name: string } }) => {
+
+  const [creatingFile, setCreatingFile] = useState<boolean>(false)
 
   const [open, setOpen] = useState<boolean>(false)
 
@@ -67,7 +70,7 @@ const DirectoryEntry = ({ dir }: { dir: { id: string, name: string } }) => {
       items={[
         {
           label: "Create File",
-          onClick: () => { }
+          onClick: () => { setCreatingFile(true) }
         },
         {
           label: "Create Directory",
@@ -125,6 +128,21 @@ const DirectoryEntry = ({ dir }: { dir: { id: string, name: string } }) => {
                   data.directory.files.map((file: FileTree_FileFragment) =>
                     <FileEntry file={file} />
                   )
+                }
+                {creatingFile && 
+                  <FileEntryEditor
+                    defaultName={"New File"}
+                    onReturn={(name) => {
+                      createFile({
+                        variables: {
+                          parent: data?.directory?.id as string,
+                          name,
+                          contents: ""
+                        }
+                      })
+                    }}
+                    onCancel={() => setCreatingFile(false)}
+                  />
                 }
               </>
           }
