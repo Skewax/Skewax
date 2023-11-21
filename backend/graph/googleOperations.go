@@ -9,6 +9,55 @@ import (
 	"google.golang.org/api/drive/v3"
 )
 
+func IsPBasic(file *drive.File) bool {
+	return strings.HasSuffix(file.Name, ".pbasic")
+}
+
+func GetFile(srv *drive.Service, id string, fields []string) (*model.File, error) {
+	file, err := srv.Files.Get(id).Do()
+	if err != nil {
+		return nil, err
+	}
+
+	return GetFilePreloaded(srv, file, fields)
+}
+
+func GetFilePreloaded(srv *drive.Service, file *drive.File, fields []string) (*model.File, error) {
+	pbasic := IsPBasic(file)
+	fileObj := model.File{
+		ID:        file.Id,
+		Name:      file.Name,
+		CreatedAt: file.CreatedTime,
+		UpdatedAt: file.ModifiedTime,
+		IsPbasic:  pbasic,
+		// Writable:  file.Capabilities.CanEdit,
+	}
+	if GetContainsField(fields, "contents") {
+		str, err := DownloadFile(srv, file.Id)
+		if err != nil {
+			return nil, err
+		}
+		fileObj.Contents = *str
+	}
+	return &fileObj, nil
+}
+
+func DownloadFile(srv *drive.Service, id string) (*string, error) {
+	download, err := srv.Files.Get(id).Download()
+	if err != nil {
+		return nil, err
+	}
+	defer download.Body.Close()
+
+	content, err := io.ReadAll(download.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	str := string(content)
+	return &str, nil
+}
+
 func GetDirectory(srv *drive.Service, id string, fields []string) (*model.Directory, error) {
 	baseDirQuery, err := srv.Files.Get(id).Do()
 	if err != nil {
@@ -28,28 +77,11 @@ func GetDirectory(srv *drive.Service, id string, fields []string) (*model.Direct
 	fileFields := GetNestedFields(fields, "files")
 
 	for _, file := range filesQuery.Files {
-		pbasic := strings.HasSuffix(file.Name, ".pbasic")
-		fileObj := model.File{
-			ID:        file.Id,
-			Name:      file.Name,
-			CreatedAt: file.CreatedTime,
-			UpdatedAt: file.ModifiedTime,
-			IsPbasic:  pbasic,
-			// Writable:  file.Capabilities.CanEdit,
+		fileObj, err := GetFilePreloaded(srv, file, fileFields)
+		if err != nil {
+			return nil, err
 		}
-		if GetContainsField(fileFields, "contents") {
-			download, err := srv.Files.Get(file.Id).Download()
-			if err != nil {
-				return nil, err
-			}
-			defer download.Body.Close()
-			content, err := io.ReadAll(download.Body)
-			if err != nil {
-				return nil, err
-			}
-			fileObj.Contents = string(content)
-		}
-		files = append(files, &fileObj)
+		files = append(files, fileObj)
 	}
 
 	subDirFields := GetNestedFields(fields, "directories")
