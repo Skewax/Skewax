@@ -1,5 +1,5 @@
 import ReactCodemirror from '@uiw/react-codemirror'
-import { pbasic, typeHoverDOMProvider } from "pbasic-language-pack"
+import { pbasic } from "pbasic-language-pack"
 import { codeFolding } from "@codemirror/language"
 
 import {
@@ -17,12 +17,9 @@ import { autocompletion } from "@codemirror/autocomplete"
 import { lintGutter, lintKeymap } from "@codemirror/lint"
 import { Box, Toolbar } from '@mui/material'
 import { useEffect, useLayoutEffect, useRef, useState } from 'react'
-import useIsDarkMode from '../../../hooks/useIsDarkMode'
-
-// typeHoverDOMProvider.value = (_, text) => 
-// {
-//     return {dom: (<div>{'<' + text + '>'}</div>)}
-// }
+import useIsDarkMode from '../../../../hooks/useIsDarkMode'
+import useEditor from '../../hooks/useEditor'
+import TitleBar from './components/TitleBar'
 
 const Codemirror = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -54,9 +51,12 @@ const Codemirror = () => {
 
   const isDark = useIsDarkMode()
 
+  const { currentFile } = useEditor()
+
   return (
     <Box width={1} height={1} display='flex' flexDirection='column'>
       <Toolbar variant='dense' />
+      <TitleBar currentFile={currentFile} />
       <Box
         width={1}
         height={1}
@@ -64,7 +64,10 @@ const Codemirror = () => {
         overflow='hidden'
       >
         <ReactCodemirror
-          value={"' SKEWAX '"}
+          value={currentFile.contents}
+          onChange={(value) => {
+            currentFile.onSave(value)
+          }}
 
           theme={isDark ? 'dark' : 'light'}
 
