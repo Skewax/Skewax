@@ -1,4 +1,4 @@
-import { Box, Drawer, IconButton, Toolbar, Tooltip } from "@mui/material"
+import { Box, Drawer, Grid, IconButton, Stack, TextField, Toolbar, Tooltip } from "@mui/material"
 import { useState } from "react"
 import FileTree from "./components/FileTree"
 import useAuth from "../../../../hooks/useAuth"
@@ -29,19 +29,24 @@ const Sidebar = () => {
         }
       }}
     >
-      <Toolbar variant='dense' />
-      <>
-        {isSignedIn &&
-          <Box height={1} display='flex' flexDirection='column' flex-grow={1}>
-            <FileTree />
+      <Box height={1} display='flex' flexDirection='column'>
+        <Toolbar variant='dense' />
+        <Stack direction='column' justifyContent='space-between' overflow='hidden'>
+          <Box margin={1}>
+            <TextField fullWidth label='Search Files' variant='standard' size='small' />
           </Box>
-        }
-        <Box position='absolute' bottom={0} right={0} width={1} p={1} display='flex' justifyContent='right' >
-          <Tooltip title='Scratchpad'>
-            <IconButton onClick={() => setCurrentFile(null)}><Edit /></IconButton>
-          </Tooltip>
-        </Box>
-      </>
+          {isSignedIn &&
+            <Box overflow='auto'>
+              <FileTree />
+            </Box>
+          }
+          <Box display='flex' justifyContent='center' alignItems='center'>
+            <Tooltip title='Scratchpad'>
+              <IconButton onClick={() => setCurrentFile(null)}><Edit /></IconButton>
+            </Tooltip>
+          </Box>
+        </Stack>
+      </Box>
     </Drawer>
   )
 }

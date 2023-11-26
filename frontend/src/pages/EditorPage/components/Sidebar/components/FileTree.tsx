@@ -116,7 +116,6 @@ const FileTree = () => {
 
     </ContextMenu >
   )
-  // <CreateFileEntry />
 }
 
 export default FileTree
