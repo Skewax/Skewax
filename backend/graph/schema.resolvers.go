@@ -252,7 +252,17 @@ func (r *queryResolver) Directory(ctx context.Context, id string) (*model.Direct
 
 // File is the resolver for the file field.
 func (r *queryResolver) File(ctx context.Context, id string) (*model.File, error) {
-	panic(fmt.Errorf("not implemented: File - file"))
+	token, err := r.getUserToken(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	driveSrv, err := r.Google.DriveService(token)
+	if err != nil {
+		return nil, err
+	}
+	fields := GetPreloads(ctx)
+	return GetFile(driveSrv, id, fields)
 }
 
 // Mutation returns MutationResolver implementation.

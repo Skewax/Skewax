@@ -29,6 +29,30 @@ func DownloadFile(srv *drive.Service, id string) (*string, error) {
 	return &str, nil
 }
 
+func GetFile(srv *drive.Service, id string, fields []string) (*model.File, error) {
+	fileQuery, err := srv.Files.Get(id).Do()
+	if err != nil {
+		return nil, err
+	}
+	fileObj := model.File{
+		ID:        fileQuery.Id,
+		Name:      fileQuery.Name,
+		CreatedAt: fileQuery.CreatedTime,
+		UpdatedAt: fileQuery.ModifiedTime,
+		// Writable:  fileQuery.Capabilities.CanEdit,
+		IsPbasic: IsPBasic(fileQuery),
+	}
+
+	if GetContainsField(fields, "contents") {
+		content, err := DownloadFile(srv, id)
+		if err != nil {
+			return nil, err
+		}
+		fileObj.Contents = *content
+	}
+	return &fileObj, nil
+}
+
 func GetDirectory(srv *drive.Service, id string, fields []string) (*model.Directory, error) {
 	baseDirQuery, err := srv.Files.Get(id).Do()
 	if err != nil {

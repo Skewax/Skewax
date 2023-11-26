@@ -3,9 +3,9 @@ import { gql } from "../../../../../__generated__/gql"
 import { Box, CircularProgress, List } from "@mui/material"
 import DirectoryEntry from "./DirectoryEntry"
 import FileEntry from "./FileEntry"
-import { DirectoryContentsFragment, FileTree_DirectoryFragment, FileTree_FileFragment } from "../../../../../__generated__/graphql"
+import { DirectoryContentsFragment, FileTree_FileFragment } from "../../../../../__generated__/graphql"
 import ContextMenu from "../../../../../components/ContextMenu"
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import DirectoryEntryEditor from "./DirectoryEntryEditor"
 // import CreateFileEntry from "./CreateFileEntry"
 // import CreateDirectoryEntry from "./CreateDirectoryEntry"
@@ -153,7 +153,8 @@ const FileTree = () => {
         }
 
       </List>
-    </ContextMenu>
+
+    </ContextMenu >
   )
   // <CreateFileEntry />
 }

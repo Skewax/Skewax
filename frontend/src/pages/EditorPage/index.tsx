@@ -5,6 +5,7 @@ import { CommandsProvider } from "../../contexts/useCommands"
 import Codemirror from "./components/Codemirror"
 import usePersistedState from "../../hooks/persistedState/usePersistedState"
 import { useEffect } from "react"
+import EditorProvider from "./contexts/EditorProvider"
 
 
 
@@ -16,27 +17,29 @@ export const EditorPage = () => {
   })
 
   return (
-    <CommandsProvider>
-      <Box
-        display='flex'
-        position='absolute'
-        top={0}
-        left={0}
-        height={1}
-        width={1}
-      >
-        <Navbar />
+    <EditorProvider>
+      <CommandsProvider>
         <Box
           display='flex'
-          flexDirection='row'
+          position='absolute'
+          top={0}
+          left={0}
           height={1}
           width={1}
         >
-          <Sidebar />
-          <Codemirror />
+          <Navbar />
+          <Box
+            display='flex'
+            flexDirection='row'
+            height={1}
+            width={1}
+          >
+            <Sidebar />
+            <Codemirror />
+          </Box>
         </Box>
-      </Box>
-    </CommandsProvider>
+      </CommandsProvider >
+    </EditorProvider >
 
   )
 }
