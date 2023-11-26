@@ -36,7 +36,7 @@ const Sidebar = () => {
             <FileTree />
           </Box>
         }
-        <Box position='absolute' bottom={0} width={1} p={1}>
+        <Box position='absolute' bottom={0} right={0} width={1} p={1} display='flex' justifyContent='right' >
           <Tooltip title='Scratchpad'>
             <IconButton onClick={() => setCurrentFile(null)}><Edit /></IconButton>
           </Tooltip>

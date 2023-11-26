@@ -7,6 +7,7 @@ export interface CurrentFile {
   editable: boolean
   isPBASIC: boolean
   onSave: (contents: string) => Promise<void>
+  shouldDebounce: boolean
 }
 
 interface EditorContextValue {

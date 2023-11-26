@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"skewax/graph/model"
+	"sort"
 	"strings"
 
 	"google.golang.org/api/drive/v3"
@@ -111,6 +112,14 @@ func GetDirectory(srv *drive.Service, id string, fields []string) (*model.Direct
 		}
 		directories = append(directories, directory)
 	}
+
+	//sorting alphabetically
+	sort.Slice(files, func(i, j int) bool {
+		return files[i].Name < files[j].Name
+	})
+	sort.Slice(directories, func(i, j int) bool {
+		return directories[i].Name < directories[j].Name
+	})
 
 	return &model.Directory{
 		ID:          id,

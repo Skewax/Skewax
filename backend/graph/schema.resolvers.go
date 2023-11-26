@@ -29,6 +29,7 @@ func (r *mutationResolver) CreateFile(ctx context.Context, args model.FileCreate
 	newFile, err := driveSrv.Files.Create(&drive.File{
 		Name:     args.Name,
 		MimeType: "text/plain",
+		Parents:  []string{args.ParentDirectory},
 	}).Media(strings.NewReader(args.Contents)).Do()
 	if err != nil {
 		return nil, err
@@ -58,10 +59,10 @@ func (r *mutationResolver) UpdateFile(ctx context.Context, id string, args model
 		return nil, err
 	}
 
-	existingFile, err := driveSrv.Files.Get(id).Do()
-	if err != nil {
-		return nil, err
-	}
+	// existingFile, err := driveSrv.Files.Get(id).Do()
+	// if err != nil {
+	// 	return nil, err
+	// }
 
 	// Build update call
 	fileReq := drive.File{
@@ -69,7 +70,7 @@ func (r *mutationResolver) UpdateFile(ctx context.Context, id string, args model
 	}
 
 	if args.Name != nil {
-		fileReq.Name = existingFile.Name
+		fileReq.Name = *args.Name
 	}
 
 	updateCall := driveSrv.Files.Update(id, &fileReq)
@@ -108,8 +109,6 @@ func (r *mutationResolver) UpdateFile(ctx context.Context, id string, args model
 
 			outFile.Contents = *contents
 		}
-	} else {
-		outFile.Contents = *args.Contents
 	}
 
 	return outFile, nil
@@ -158,12 +157,38 @@ func (r *mutationResolver) DeleteDirectory(ctx context.Context, id string) (*mod
 
 // RenameDirectory is the resolver for the renameDirectory field.
 func (r *mutationResolver) RenameDirectory(ctx context.Context, id string, name string) (*model.Directory, error) {
-	panic(fmt.Errorf("not implemented: RenameDirectory - renameDirectory"))
-}
+	token, err := r.getUserToken(ctx)
+	if err != nil {
+		return nil, err
+	}
+	client, err := r.Google.DriveService(token)
+	if err != nil {
+		return nil, err
+	}
 
-// RenameFile is the resolver for the renameFile field.
-func (r *mutationResolver) RenameFile(ctx context.Context, id string, name string) (*model.File, error) {
-	panic(fmt.Errorf("not implemented: RenameFile - renameFile"))
+	existingDir, err := client.Files.Get(id).Do()
+	if err != nil {
+		return nil, err
+	}
+	if existingDir.MimeType != "application/vnd.google-apps.folder" {
+		return nil, fmt.Errorf("not a directory")
+	}
+
+	// Build update call
+	req := drive.File{
+		Name:     name,
+		MimeType: "application/vnd.google-apps.folder",
+	}
+
+	updateCall := client.Files.Update(id, &req)
+
+	// Execute update call
+	newDir, err := updateCall.Do()
+	if err != nil {
+		return nil, err
+	}
+
+	return GetDirectory(client, newDir.Id, GetPreloads(ctx))
 }
 
 // MoveFile is the resolver for the moveFile field.
@@ -273,3 +298,13 @@ func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//     it when you're done.
+//   - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *mutationResolver) RenameFile(ctx context.Context, id string, name string) (*model.File, error) {
+	panic(fmt.Errorf("not implemented: RenameFile - renameFile"))
+}
