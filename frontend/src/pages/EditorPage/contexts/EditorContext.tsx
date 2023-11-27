@@ -2,6 +2,7 @@ import { createContext } from "react"
 
 
 export interface CurrentFile {
+  id: string | null
   contents: string
   name: string
   editable: boolean

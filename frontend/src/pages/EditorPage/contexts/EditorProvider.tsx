@@ -7,9 +7,12 @@ const EditorProvider = ({ children }: { children: ReactNode | ReactNode[] }) => 
   const [scratchpad, setScrathpad] = usePersistedState("skewaxStratchpad", "' This is your scratchpad. It only exists on this computer, but will persist between page loads.")
   const [currentFile, setCurrentFile] = useState<CurrentFile | null>(null)
 
+  const [currentFileID, setCurrentFileID] = usePersistedState<string | null>("skewaxCurrentFileID", null)
+
   return (
     <EditorContext.Provider value={{
       currentFile: currentFile ?? {
+        id: null,
         contents: scratchpad,
         name: "Scratchpad",
         editable: true,
@@ -19,7 +22,14 @@ const EditorProvider = ({ children }: { children: ReactNode | ReactNode[] }) => 
         },
         shouldDebounce: true
       },
-      setCurrentFile
+      setCurrentFile: (file) => {
+        if (file === null) {
+          setCurrentFileID(null)
+        } else {
+          setCurrentFileID(file.id)
+        }
+        setCurrentFile(file)
+      }
     }}>
       {children}
     </EditorContext.Provider >

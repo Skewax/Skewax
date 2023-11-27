@@ -38,7 +38,7 @@ mutation RenameFile($id: ID!, $name: String!) {
 
 const FileEntry = ({ file, setCreatingDirectory, setCreatingFile }: FileEntryProps) => {
 
-  const { setCurrentFile } = useEditor()
+  const { setCurrentFile, currentFile: { id: currentFileId } } = useEditor()
 
   const [renaming, setRenaming] = useState<boolean>(false)
 
@@ -51,6 +51,7 @@ const FileEntry = ({ file, setCreatingDirectory, setCreatingFile }: FileEntryPro
     onCompleted: (data) => {
       if (!data.file) return
       setCurrentFile({
+        id: data.file.id,
         contents: data.file.contents,
         name: data.file.name,
         editable: data.file.writable,
@@ -124,6 +125,7 @@ const FileEntry = ({ file, setCreatingDirectory, setCreatingFile }: FileEntryPro
         onClick={() => {
           getFileContents()
         }}
+        selected={currentFileId === file.id}
       >
         <ListItemIcon>
           {
