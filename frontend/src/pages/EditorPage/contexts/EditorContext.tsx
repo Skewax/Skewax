@@ -2,7 +2,6 @@ import { createContext } from "react"
 
 
 export interface CurrentFile {
-  id: string | null
   contents: string
   name: string
   editable: boolean
@@ -13,7 +12,8 @@ export interface CurrentFile {
 
 interface EditorContextValue {
   currentFile: CurrentFile
-  setCurrentFile: (file: CurrentFile | null) => void
+  setCurrentFile: (file: CurrentFile | null, id: string | null) => void
+  currentFileID: string | null
 }
 
 const EditorContext = createContext<EditorContextValue>({} as EditorContextValue)

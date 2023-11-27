@@ -5,7 +5,7 @@ import ContextMenu from "../../../../../components/ContextMenu"
 import { gql } from "../../../../../__generated__"
 import { useLazyQuery, useMutation } from "@apollo/client"
 import useEditor from "../../../hooks/useEditor"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import EntryEditor from "./EntryEditor"
 import useFileWrite from "../hooks/useFileWrite"
 
@@ -38,7 +38,7 @@ mutation RenameFile($id: ID!, $name: String!) {
 
 const FileEntry = ({ file, setCreatingDirectory, setCreatingFile }: FileEntryProps) => {
 
-  const { setCurrentFile, currentFile: { id: currentFileId } } = useEditor()
+  const { setCurrentFile, currentFileID, currentFile } = useEditor()
 
   const [renaming, setRenaming] = useState<boolean>(false)
 
@@ -51,7 +51,6 @@ const FileEntry = ({ file, setCreatingDirectory, setCreatingFile }: FileEntryPro
     onCompleted: (data) => {
       if (!data.file) return
       setCurrentFile({
-        id: data.file.id,
         contents: data.file.contents,
         name: data.file.name,
         editable: data.file.writable,
@@ -60,7 +59,7 @@ const FileEntry = ({ file, setCreatingDirectory, setCreatingFile }: FileEntryPro
           await writeFileContents(file.id, contents)
         },
         shouldDebounce: true
-      })
+      }, data.file.id)
     }
   })
 
@@ -83,6 +82,12 @@ const FileEntry = ({ file, setCreatingDirectory, setCreatingFile }: FileEntryPro
       })
     }
   })
+
+  useEffect(() => {
+    if (currentFileID === file.id && currentFile.name === "Scratchpad") {
+      getFileContents()
+    }
+  }, [currentFileID, currentFile, getFileContents, file.id])
 
   if (renaming) {
     return (
@@ -125,7 +130,7 @@ const FileEntry = ({ file, setCreatingDirectory, setCreatingFile }: FileEntryPro
         onClick={() => {
           getFileContents()
         }}
-        selected={currentFileId === file.id}
+        selected={currentFileID === file.id}
       >
         <ListItemIcon>
           {

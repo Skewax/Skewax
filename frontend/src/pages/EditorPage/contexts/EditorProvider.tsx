@@ -12,7 +12,6 @@ const EditorProvider = ({ children }: { children: ReactNode | ReactNode[] }) => 
   return (
     <EditorContext.Provider value={{
       currentFile: currentFile ?? {
-        id: null,
         contents: scratchpad,
         name: "Scratchpad",
         editable: true,
@@ -20,14 +19,11 @@ const EditorProvider = ({ children }: { children: ReactNode | ReactNode[] }) => 
         onSave: async (contents) => {
           setScrathpad(contents)
         },
-        shouldDebounce: true
+        shouldDebounce: false
       },
-      setCurrentFile: (file) => {
-        if (file === null) {
-          setCurrentFileID(null)
-        } else {
-          setCurrentFileID(file.id)
-        }
+      currentFileID,
+      setCurrentFile: (file, id) => {
+        setCurrentFileID(id)
         setCurrentFile(file)
       }
     }}>

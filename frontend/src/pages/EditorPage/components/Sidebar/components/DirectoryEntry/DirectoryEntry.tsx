@@ -1,12 +1,14 @@
 import { ListItemButton, ListItemIcon, ListItemText, } from "@mui/material";
 import { ExpandLess, ExpandMore, Folder } from "@mui/icons-material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLazyQuery, useMutation } from "@apollo/client";
 import SubTree from "./components/SubTree";
 import subfolderQuery from "./subfolderQuery";
 import ContextMenu from "../../../../../../components/ContextMenu";
 import EntryEditor from "../EntryEditor";
 import { gql } from "../../../../../../__generated__";
+import usePersistedState from "../../../../../../hooks/persistedState/usePersistedState";
+import useEditor from "../../../../hooks/useEditor";
 
 const RenameDirectoryMutation = gql(`
   mutation RenameDirectory($id: ID!, $name: String!) {
@@ -19,9 +21,15 @@ const RenameDirectoryMutation = gql(`
 
 const DirectoryEntry = ({ dir }: { dir: { id: string, name: string } }) => {
 
-  const [open, setOpen] = useState<boolean>(false)
+  const [open, setOpen] = usePersistedState<boolean>('open' + dir.id, false)
 
-  const [getDirectoryContents, { data }] = useLazyQuery(subfolderQuery)
+  const { currentFileID } = useEditor()
+
+
+  const [getDirectoryContents, { data, loading }] = useLazyQuery(subfolderQuery)
+  useEffect(() => {
+    if (open && data === undefined) getDirectoryContents({ variables: { id: dir.id } })
+  }, [open, data, getDirectoryContents, dir.id])
 
   const [renameDirectory] = useMutation(RenameDirectoryMutation, {
     update(cache, { data }) {
@@ -84,8 +92,13 @@ const DirectoryEntry = ({ dir }: { dir: { id: string, name: string } }) => {
           />
           : <ListItemButton
             onClick={() => {
-              if (!open) getDirectoryContents({ variables: { id: dir.id } })
-              setOpen(!open)
+              if (!open) setOpen(true)
+              else {
+                if (data?.directory?.files.find(file => file.id === currentFileID) === undefined) {
+                  setOpen(false)
+                }
+
+              }
             }}
           >
             <ListItemIcon>

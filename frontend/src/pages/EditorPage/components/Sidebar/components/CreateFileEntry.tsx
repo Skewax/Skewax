@@ -59,7 +59,6 @@ const CreateFileEntry = ({ parentId, open, base, setOpen, document }: CreateFile
       }
 
       setCurrentFile({
-        id: data.createFile.id,
         contents: '',
         name: data.createFile.name,
         editable: true,
@@ -68,7 +67,7 @@ const CreateFileEntry = ({ parentId, open, base, setOpen, document }: CreateFile
           await writeToFile(data.createFile.id, contents)
         },
         shouldDebounce: true
-      })
+      }, data.createFile.id)
     }
   })
   if (!open) return null
