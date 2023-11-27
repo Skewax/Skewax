@@ -20,10 +20,7 @@ const GetFileContentsDocument = gql(`
   query GetFileContents($id: ID!) {
     file(id: $id) {
       id
-      name
       contents
-      isPBASIC
-      writable
     }
   }
   `)
@@ -52,9 +49,9 @@ const FileEntry = ({ file, setCreatingDirectory, setCreatingFile }: FileEntryPro
       if (!data.file) return
       setCurrentFile({
         contents: data.file.contents,
-        name: data.file.name,
-        editable: data.file.writable,
-        isPBASIC: data.file.isPBASIC,
+        name: file.name,
+        editable: file.writable,
+        isPBASIC: file.isPBASIC,
         onSave: async (contents) => {
           await writeFileContents(file.id, contents)
         },

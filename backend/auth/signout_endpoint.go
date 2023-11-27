@@ -6,6 +6,7 @@ import (
 	"net/url"
 	"skewax/db"
 	"strings"
+
 	"gorm.io/gorm"
 )
 
@@ -18,9 +19,6 @@ func (h *SignoutHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	sessionId := r.URL.Query().Get("session")
 	session := db.SessionToken{}
 	err := h.DB.First(&session, "id = ?", sessionId).Error
-
-	fmt.Println("Token found:")
-	fmt.Println(session)
 
 	if err != nil {
 		fmt.Println(err)

@@ -59,11 +59,6 @@ func (r *mutationResolver) UpdateFile(ctx context.Context, id string, args model
 		return nil, err
 	}
 
-	// existingFile, err := driveSrv.Files.Get(id).Do()
-	// if err != nil {
-	// 	return nil, err
-	// }
-
 	// Build update call
 	fileReq := drive.File{
 		MimeType: "text/plain",
@@ -227,6 +222,7 @@ func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
 
 // BaseDirectory is the resolver for the baseDirectory field.
 func (r *queryResolver) BaseDirectory(ctx context.Context) (*model.Directory, error) {
+
 	token, err := r.getUserToken(ctx)
 	if err != nil {
 		return nil, err
@@ -298,13 +294,3 @@ func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//     it when you're done.
-//   - You have helper methods in this file. Move them out to keep these resolver files clean.
-func (r *mutationResolver) RenameFile(ctx context.Context, id string, name string) (*model.File, error) {
-	panic(fmt.Errorf("not implemented: RenameFile - renameFile"))
-}

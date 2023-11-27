@@ -16,7 +16,7 @@ const documents = {
     "\n  query Me {\n    me {\n      id\n      name\n      email\n      image\n    }\n  }\n\n": types.MeDocument,
     "\n  mutation RenameDirectory($id: ID!, $name: String!) {\n    renameDirectory(id: $id, name: $name) {\n      id\n      name\n    }\n  }\n": types.RenameDirectoryDocument,
     "\nquery Subfolder($id: ID!) {\n  directory(id: $id) {\n    ...FileTree_Directory\n  }\n}\n": types.SubfolderDocument,
-    "\n  query GetFileContents($id: ID!) {\n    file(id: $id) {\n      id\n      name\n      contents\n      isPBASIC\n      writable\n    }\n  }\n  ": types.GetFileContentsDocument,
+    "\n  query GetFileContents($id: ID!) {\n    file(id: $id) {\n      id\n      contents\n    }\n  }\n  ": types.GetFileContentsDocument,
     "\nmutation RenameFile($id: ID!, $name: String!) {\n  updateFile(id: $id, args: { name: $name }) {\n    ...FileTree_File\n  }\n}\n": types.RenameFileDocument,
     "\nfragment FileTree_File on File {\n  id\n  name\n  isPBASIC\n  writable\n}\nfragment FileTree_Directory on Directory {\n  id\n  name\n  files {\n    ...FileTree_File\n  }\n  directories {\n    id\n    name\n  }\n}\n": types.FileTree_FileFragmentDoc,
     "\nquery BaseDirectory {\n  baseDirectory {\n    ...FileTree_Directory\n  }\n}\n": types.BaseDirectoryDocument,
@@ -54,7 +54,7 @@ export function gql(source: "\nquery Subfolder($id: ID!) {\n  directory(id: $id)
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
-export function gql(source: "\n  query GetFileContents($id: ID!) {\n    file(id: $id) {\n      id\n      name\n      contents\n      isPBASIC\n      writable\n    }\n  }\n  "): (typeof documents)["\n  query GetFileContents($id: ID!) {\n    file(id: $id) {\n      id\n      name\n      contents\n      isPBASIC\n      writable\n    }\n  }\n  "];
+export function gql(source: "\n  query GetFileContents($id: ID!) {\n    file(id: $id) {\n      id\n      contents\n    }\n  }\n  "): (typeof documents)["\n  query GetFileContents($id: ID!) {\n    file(id: $id) {\n      id\n      contents\n    }\n  }\n  "];
 /**
  * The gql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
