@@ -55,11 +55,14 @@ const Codemirror = () => {
 
   const { currentFile } = useEditor()
 
+  const [codemirrorText, setCodemirrorText] = useState<string>("")
+
   const [updateFunction, loading] = useDebounce((value: string) => {
     currentFile.onSave(value)
   }, currentFile.shouldDebounce ? 1000 : 0)
 
   useEffect(() => {
+    setCodemirrorText(currentFile.contents)
     editorRef.current?.view?.focus()
   }, [currentFile, editorRef])
 
@@ -75,8 +78,11 @@ const Codemirror = () => {
         overflow='hidden'
       >
         <ReactCodemirror
-          value={currentFile.contents}
-          onChange={updateFunction}
+          value={codemirrorText}
+          onChange={(val) => {
+            setCodemirrorText(val)
+            updateFunction(val)
+          }}
           ref={editorRef}
 
           theme={isDark ? 'dark' : 'light'}

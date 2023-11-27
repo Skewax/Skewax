@@ -31,8 +31,7 @@ const GetFileContentsDocument = gql(`
 const RenameFileMutation = gql(`
 mutation RenameFile($id: ID!, $name: String!) {
   updateFile(id: $id, args: { name: $name }) {
-    id
-    name
+    ...FileTree_File
   }
 }
 `)
@@ -71,7 +70,13 @@ const FileEntry = ({ file, setCreatingDirectory, setCreatingFile }: FileEntryPro
         id: cache.identify(data?.updateFile),
         fields: {
           name() {
-            return data?.updateFile?.name
+            return data?.updateFile.name
+          },
+          isPBASIC() {
+            return data?.updateFile.isPBASIC
+          },
+          writable() {
+            return data?.updateFile.writable
           }
         }
       })
