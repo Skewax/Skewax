@@ -1,4 +1,4 @@
-import ReactCodemirror from '@uiw/react-codemirror'
+import ReactCodemirror, { ReactCodeMirrorRef } from '@uiw/react-codemirror'
 import { pbasic } from "pbasic-language-pack"
 import { codeFolding } from "@codemirror/language"
 
@@ -16,14 +16,16 @@ import { defaultKeymap, history } from "@codemirror/commands"
 import { autocompletion } from "@codemirror/autocomplete"
 import { lintGutter, lintKeymap } from "@codemirror/lint"
 import { Box, Toolbar } from '@mui/material'
-import { useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { Ref, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import useIsDarkMode from '../../../../hooks/useIsDarkMode'
 import useEditor from '../../hooks/useEditor'
 import TitleBar from './components/TitleBar'
+import useDebounce from '../../../../hooks/useDebounce'
 
 const Codemirror = () => {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const boundRef = useRef(null) as any
+  const editorRef = useRef<ReactCodeMirrorRef>(null)
   const [size, setSize] = useState<{ width: number, height: number }>({ width: 0, height: 0 })
 
   useEffect(() => {
@@ -53,10 +55,22 @@ const Codemirror = () => {
 
   const { currentFile } = useEditor()
 
+  const [codemirrorText, setCodemirrorText] = useState<string>("")
+
+  const [updateFunction, loading] = useDebounce((value: string) => {
+    currentFile.onSave(value)
+  }, currentFile.shouldDebounce ? 1000 : 0)
+
+  useEffect(() => {
+    setCodemirrorText(currentFile.contents)
+    editorRef.current?.view?.focus()
+  }, [currentFile, editorRef])
+
+
   return (
     <Box width={1} height={1} display='flex' flexDirection='column'>
       <Toolbar variant='dense' />
-      <TitleBar currentFile={currentFile} />
+      <TitleBar currentFile={currentFile} loading={loading} />
       <Box
         width={1}
         height={1}
@@ -64,10 +78,12 @@ const Codemirror = () => {
         overflow='hidden'
       >
         <ReactCodemirror
-          value={currentFile.contents}
-          onChange={(value) => {
-            currentFile.onSave(value)
+          value={codemirrorText}
+          onChange={(val) => {
+            setCodemirrorText(val)
+            updateFunction(val)
           }}
+          ref={editorRef}
 
           theme={isDark ? 'dark' : 'light'}
 

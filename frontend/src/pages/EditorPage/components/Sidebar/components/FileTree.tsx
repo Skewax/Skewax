@@ -6,9 +6,12 @@ import FileEntry from "./FileEntry"
 import { DirectoryContentsFragment, FileTree_FileFragment } from "../../../../../__generated__/graphql"
 import ContextMenu from "../../../../../components/ContextMenu"
 import { useState } from "react"
-import DirectoryEntryEditor from "./DirectoryEntryEditor"
-// import CreateFileEntry from "./CreateFileEntry"
-// import CreateDirectoryEntry from "./CreateDirectoryEntry"
+import EntryEditor from "./EntryEditor"
+import useEditor from "../../../hooks/useEditor"
+import createDirectoryMutation from "../../../mutations/createDirectoryMutation"
+import createFileMutation from "../../../mutations/createFileMutation"
+import CreateDirectoryEntry from "./CreateDirectoryEntry"
+import CreateFileEntry from "./CreateFileEntry"
 
 gql(`
 fragment FileTree_File on File {
@@ -38,68 +41,17 @@ query BaseDirectory {
 }
 `)
 
-const createDirectoryMutation = gql(`
-mutation CreateDirectory($name: String!, $parent: ID!) {
-  createDirectory(name: $name, parentDirectory: $parent) {
-    id
-    name
-    files {
-      ...FileTree_File
-    }
-    directories {
-      id
-      name
-      files {
-        id
-        name
-      }
-      directories {
-        id
-        name
-      }
-    }
-  }
-}
-`)
+
 
 const FileTree = () => {
-  // const [creatingFile, setCreatingFile] = useState(false)
+  const [creatingFile, setCreatingFile] = useState(false)
   const [creatingDirectory, setCreatingDirectory] = useState(false)
 
   const { data } = useQuery(baseDirectoryQuery)
 
-  const [createDirectory] = useMutation(createDirectoryMutation, {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    update: (cache: any, { data }: any) => {
-      if (data === null) {
-        return
-      }
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const oldBaseDir: any = cache.readQuery({ query: baseDirectoryQuery })
-      const newBaseDir = {
-        ...oldBaseDir.baseDirectory,
-        directories: [
-          ...oldBaseDir.baseDirectory.directories,
-          {
-            ...data.createDirectory,
-          }
-        ]
-      }
-      cache.writeQuery(
-        {
-          query: baseDirectoryQuery,
-          data: {
-            baseDirectory: newBaseDir
-          }
-        }
-      )
-    }
-  })
-
-
   if (data === undefined) {
     return (
-      <Box display='flex' justifyContent='center' alignItems='center' height={1} width={1}>
+      <Box margin={1} display='flex' justifyContent='center' alignItems='center' height={1} width={1}>
         <CircularProgress />
       </Box>
     )
@@ -113,7 +65,10 @@ const FileTree = () => {
       items={[
         {
           label: "Create File",
-          onClick: () => { }
+          onClick: () => {
+            setCreatingFile(true)
+          }
+
         },
         {
           label: "Create Directory",
@@ -133,30 +88,34 @@ const FileTree = () => {
         }
         {
           data.baseDirectory.files.map((file: FileTree_FileFragment) =>
-            <FileEntry file={file} key={file.id} />
+            <FileEntry
+              file={file}
+              key={file.id}
+              setCreatingFile={setCreatingFile}
+              setCreatingDirectory={setCreatingDirectory}
+              parentId={data.baseDirectory.id}
+            />
           )
         }
-        {creatingDirectory &&
-          <DirectoryEntryEditor
-            defaultName={"Untitled Folder"}
-            onReturn={(name) => {
-              setCreatingDirectory(false)
-              createDirectory({
-                variables: {
-                  name,
-                  parent: data.baseDirectory.id
-                }
-              })
-            }}
-            onCancel={() => setCreatingDirectory(false)}
-          />
-        }
+        <CreateDirectoryEntry
+          document={baseDirectoryQuery}
+          parentId={data.baseDirectory.id}
+          open={creatingDirectory}
+          setOpen={setCreatingDirectory}
+          base={true}
+        />
+        <CreateFileEntry
+          document={baseDirectoryQuery}
+          parentId={data.baseDirectory.id}
+          open={creatingFile}
+          setOpen={setCreatingFile}
+          base={true}
+        />
 
       </List>
 
     </ContextMenu >
   )
-  // <CreateFileEntry />
 }
 
 export default FileTree

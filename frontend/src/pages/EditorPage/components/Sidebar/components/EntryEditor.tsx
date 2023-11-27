@@ -9,7 +9,7 @@ interface DirectoryEntryEditorProps {
 }
 
 
-const DirectoryEntryEditor = ({ defaultName, onReturn, onCancel }: DirectoryEntryEditorProps) => {
+const EntryEditor = ({ defaultName, onReturn, onCancel }: DirectoryEntryEditorProps) => {
   const [name, setName] = useState(defaultName)
 
   const ref = useRef<HTMLInputElement>(null)
@@ -20,6 +20,7 @@ const DirectoryEntryEditor = ({ defaultName, onReturn, onCancel }: DirectoryEntr
   return (
     <ListItem>
       <TextField
+        size="small"
         inputRef={ref}
         value={name}
         onChange={(e) => setName(e.target.value)}
@@ -29,7 +30,7 @@ const DirectoryEntryEditor = ({ defaultName, onReturn, onCancel }: DirectoryEntr
           if (e.key === "Enter") { onReturn(name) }
 
         }}
-        // onBlur={() => onCancel()}
+        onBlur={() => onCancel()}
         onFocus={(event) => {
           event.target.select()
         }}
@@ -38,4 +39,4 @@ const DirectoryEntryEditor = ({ defaultName, onReturn, onCancel }: DirectoryEntr
   )
 }
 
-export default DirectoryEntryEditor
+export default EntryEditor

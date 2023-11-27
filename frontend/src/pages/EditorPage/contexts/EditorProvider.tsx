@@ -16,7 +16,8 @@ const EditorProvider = ({ children }: { children: ReactNode | ReactNode[] }) => 
         isPBASIC: true,
         onSave: async (contents) => {
           setScrathpad(contents)
-        }
+        },
+        shouldDebounce: true
       },
       setCurrentFile
     }}>

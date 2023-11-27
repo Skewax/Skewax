@@ -1,8 +1,8 @@
-import { AppBar, Avatar, IconButton, Stack, Typography } from '@mui/material'
-import { Article, Code } from '@mui/icons-material'
+import { AppBar, Avatar, CircularProgress, IconButton, Stack, Tooltip, Typography } from '@mui/material'
+import { Article, Check, Code } from '@mui/icons-material'
 import { CurrentFile } from '../../../contexts/EditorContext'
 
-const TitleBar = ({ currentFile }: { currentFile: CurrentFile }) => {
+const TitleBar = ({ currentFile, loading }: { currentFile: CurrentFile, loading: boolean }) => {
 
   return (
     <AppBar
@@ -29,6 +29,16 @@ const TitleBar = ({ currentFile }: { currentFile: CurrentFile }) => {
         <Typography variant='h6' align='center' >
           {currentFile.name}
         </Typography>
+        <Tooltip title={loading ? 'Saving' : 'Saved'}>
+          <div>
+            {
+              loading ?
+                <CircularProgress size={24} />
+                :
+                <Check />
+            }
+          </div>
+        </Tooltip>
       </Stack>
     </AppBar>
   )

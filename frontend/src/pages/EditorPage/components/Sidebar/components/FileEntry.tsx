@@ -3,11 +3,17 @@ import { CircularProgress, ListItemButton, ListItemIcon, ListItemText } from "@m
 import { FileTree_FileFragment } from "../../../../../__generated__/graphql"
 import ContextMenu from "../../../../../components/ContextMenu"
 import { gql } from "../../../../../__generated__"
-import { useLazyQuery } from "@apollo/client"
+import { useLazyQuery, useMutation } from "@apollo/client"
 import useEditor from "../../../hooks/useEditor"
+import { useState } from "react"
+import EntryEditor from "./EntryEditor"
+import useFileWrite from "../hooks/useFileWrite"
 
 interface FileEntryProps {
   file: FileTree_FileFragment
+  parentId: string
+  setCreatingFile: (creatingFile: boolean) => void
+  setCreatingDirectory: (creatingDirectory: boolean) => void
 }
 
 const GetFileContentsDocument = gql(`
@@ -22,9 +28,21 @@ const GetFileContentsDocument = gql(`
   }
   `)
 
-const FileEntry = ({ file }: FileEntryProps) => {
+const RenameFileMutation = gql(`
+mutation RenameFile($id: ID!, $name: String!) {
+  updateFile(id: $id, args: { name: $name }) {
+    ...FileTree_File
+  }
+}
+`)
+
+const FileEntry = ({ file, setCreatingDirectory, setCreatingFile }: FileEntryProps) => {
 
   const { setCurrentFile } = useEditor()
+
+  const [renaming, setRenaming] = useState<boolean>(false)
+
+  const writeFileContents = useFileWrite()
 
   const [getFileContents, { loading }] = useLazyQuery(GetFileContentsDocument, {
     variables: {
@@ -38,26 +56,62 @@ const FileEntry = ({ file }: FileEntryProps) => {
         editable: data.file.writable,
         isPBASIC: data.file.isPBASIC,
         onSave: async (contents) => {
+          await writeFileContents(file.id, contents)
+        },
+        shouldDebounce: true
+      })
+    }
+  })
 
+  const [renameFile] = useMutation(RenameFileMutation, {
+    update(cache, { data }) {
+      if (!data?.updateFile) return
+      cache.modify({
+        id: cache.identify(data?.updateFile),
+        fields: {
+          name() {
+            return data?.updateFile.name
+          },
+          isPBASIC() {
+            return data?.updateFile.isPBASIC
+          },
+          writable() {
+            return data?.updateFile.writable
+          }
         }
       })
     }
   })
+
+  if (renaming) {
+    return (
+      <EntryEditor
+        defaultName={file.name}
+        onReturn={(name) => {
+          renameFile({ variables: { id: file.id, name } })
+          setRenaming(false)
+        }}
+        onCancel={() => {
+          setRenaming(false)
+        }}
+      />
+    )
+  }
 
   return (
     <ContextMenu
       items={[
         {
           label: "Create File",
-          onClick: () => { }
+          onClick: () => { setCreatingFile(true) }
         },
         {
           label: "Create Directory",
-          onClick: () => { }
+          onClick: () => { setCreatingDirectory(true) }
         },
         {
           label: "Rename",
-          onClick: () => { }
+          onClick: () => { setRenaming(true) }
         },
         {
           label: "Delete",
