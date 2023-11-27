@@ -47,7 +47,9 @@ const FileTree = () => {
   const [creatingFile, setCreatingFile] = useState(false)
   const [creatingDirectory, setCreatingDirectory] = useState(false)
 
-  const { data } = useQuery(baseDirectoryQuery)
+  const { data } = useQuery(baseDirectoryQuery, {
+    fetchPolicy: 'cache-and-network'
+  })
 
   if (data === undefined) {
     return (

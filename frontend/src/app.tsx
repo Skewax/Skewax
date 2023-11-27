@@ -11,6 +11,7 @@ import { useMemo } from 'react'
 import useAuth from './hooks/useAuth'
 import { onError } from "@apollo/client/link/error";
 import { DefaultRedirect } from './pages/DefaultRedirect'
+import { LocalStorageWrapper, persistCache } from 'apollo3-cache-persist'
 
 const router = createBrowserRouter([
   {
@@ -39,6 +40,13 @@ const httpLink = createHttpLink({
 })
 
 
+const cache = new InMemoryCache()
+
+await persistCache({
+  cache,
+  storage: new LocalStorageWrapper(window.localStorage),
+})
+
 
 const App = () => {
 
@@ -51,7 +59,7 @@ const App = () => {
 
     if (jwtData == null) return new ApolloClient({
       link: httpLink,
-      cache: new InMemoryCache(),
+      cache: cache(),
     });
 
     const authMiddleware = setContext((_, { headers }) => {
@@ -77,7 +85,7 @@ const App = () => {
     return new ApolloClient({
       // link: httpLink.concat(authMiddleware),
       link: ApolloLink.from([authMiddleware, errorMiddleware, httpLink]),
-      cache: new InMemoryCache(),
+      cache: cache,
 
     });
   }, [jwtData, requestToken]);
