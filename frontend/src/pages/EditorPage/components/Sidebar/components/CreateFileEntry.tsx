@@ -13,7 +13,7 @@ interface CreateFileEntryProps {
   base?: boolean
 }
 
-const CreateFileEntry = ({ parentId, open, base, setOpen }: CreateFileEntryProps) => {
+const CreateFileEntry = ({ parentId, open, base, setOpen, document }: CreateFileEntryProps) => {
 
   const { setCurrentFile } = useEditor()
 
@@ -25,18 +25,38 @@ const CreateFileEntry = ({ parentId, open, base, setOpen }: CreateFileEntryProps
       if (data === null) {
         return
       }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const oldDir: any = cache.readQuery({ query: document, variables: base ? undefined : { id: parentId } })
-      const newDir = {
-        ...oldDir.directory,
-        files: [...oldDir.directory.files, data.createFile]
+
+      const dir = base ? oldDir.baseDirectory : oldDir.directory
+
+      if (dir === undefined) {
+        return
       }
-      cache.writeQuery({
-        query: document,
-        variables: base ? undefined : { id: parentId },
-        data: {
-          directory: newDir
-        }
-      })
+
+
+      const newDir = {
+        ...dir,
+        files: [...dir.files, data.createFile]
+      }
+
+      if (base) {
+        cache.writeQuery({
+          query: document,
+          data: {
+            baseDirectory: newDir
+          }
+        })
+      }
+      else {
+        cache.writeQuery({
+          query: document,
+          variables: { id: parentId },
+          data: {
+            directory: newDir
+          }
+        })
+      }
 
       setCurrentFile({
         contents: '',

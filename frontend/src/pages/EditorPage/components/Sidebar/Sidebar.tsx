@@ -31,16 +31,16 @@ const Sidebar = () => {
     >
       <Box height={1} display='flex' flexDirection='column'>
         <Toolbar variant='dense' />
-        <Stack direction='column' justifyContent='space-between' overflow='hidden'>
+        <Stack direction='column' justifyContent='space-between' overflow='hidden' height={1}>
           <Box margin={1}>
             <TextField fullWidth label='Search Files' variant='standard' size='small' />
           </Box>
           {isSignedIn &&
-            <Box overflow='auto'>
+            <Box overflow='auto' flexGrow={3}>
               <FileTree />
             </Box>
           }
-          <Box display='flex' justifyContent='center' alignItems='center'>
+          <Box display='flex' justifyContent='center' alignItems='end' flex-grow={1}>
             <Tooltip title='Scratchpad'>
               <IconButton onClick={() => setCurrentFile(null)}><Edit /></IconButton>
             </Tooltip>

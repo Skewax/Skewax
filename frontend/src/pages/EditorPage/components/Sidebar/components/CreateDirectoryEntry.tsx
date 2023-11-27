@@ -8,6 +8,7 @@ interface CreateDirectoryEntryProps {
   open: boolean
   base?: boolean
   setOpen: (open: boolean) => void
+
 }
 
 const CreateDirectoryEntry = ({ parentId, document, open, setOpen, base }: CreateDirectoryEntryProps) => {
@@ -19,17 +20,35 @@ const CreateDirectoryEntry = ({ parentId, document, open, setOpen, base }: Creat
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const oldDir: any = cache.readQuery({ query: document, variables: base ? undefined : { id: parentId } })
-      const newDir = {
-        ...oldDir.directory,
-        directories: [...oldDir.directory.directories, data.createDirectory]
+
+      const dir = base ? oldDir.baseDirectory : oldDir.directory
+
+      if (dir === undefined) {
+        return
       }
-      cache.writeQuery({
-        query: document,
-        variables: base ? undefined : { id: parentId },
-        data: {
-          directory: newDir
-        }
-      })
+
+      const newDir = {
+        ...dir,
+        directories: [...dir.directories, data.createDirectory]
+      }
+
+      if (base) {
+        cache.writeQuery({
+          query: document,
+          data: {
+            baseDirectory: newDir
+          }
+        })
+      }
+      else {
+        cache.writeQuery({
+          query: document,
+          variables: { id: parentId },
+          data: {
+            directory: newDir
+          }
+        })
+      }
     }
   })
   if (!open) return null

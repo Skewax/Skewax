@@ -9,16 +9,7 @@ mutation CreateDirectory($name: String!, $parent: ID!) {
       ...FileTree_File
     }
     directories {
-      id
-      name
-      files {
-        id
-        name
-      }
-      directories {
-        id
-        name
-      }
+      ...FileTree_Directory
     }
   }
 }

@@ -51,7 +51,7 @@ const FileTree = () => {
 
   if (data === undefined) {
     return (
-      <Box display='flex' justifyContent='center' alignItems='center' height={1} width={1}>
+      <Box margin={1} display='flex' justifyContent='center' alignItems='center' height={1} width={1}>
         <CircularProgress />
       </Box>
     )
