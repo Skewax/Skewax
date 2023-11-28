@@ -26,9 +26,12 @@ const DirectoryEntry = ({ dir }: { dir: { id: string, name: string } }) => {
   const { currentFileID } = useEditor()
 
 
-  const [getDirectoryContents, { data, loading }] = useLazyQuery(subfolderQuery)
+  const [getDirectoryContents, { data }] = useLazyQuery(subfolderQuery)
   useEffect(() => {
-    if (open && data === undefined) getDirectoryContents({ variables: { id: dir.id } })
+    if (open && data === undefined) getDirectoryContents({
+      variables: { id: dir.id },
+      fetchPolicy: 'cache-and-network'
+    })
   }, [open, data, getDirectoryContents, dir.id])
 
   const [renameDirectory] = useMutation(RenameDirectoryMutation, {

@@ -1,6 +1,6 @@
 import { Box, CircularProgress, Collapse, Divider, List } from "@mui/material"
 import DirectoryEntry from "../DirectoryEntry"
-import FileEntry from "../../FileEntry"
+import FileEntry from "../../FileEntry.1"
 import { FileTree_DirectoryFragment, FileTree_FileFragment } from "../../../../../../../__generated__/graphql"
 import CreateFileEntry from "../../CreateFileEntry"
 import subfolderQuery from "../subfolderQuery"

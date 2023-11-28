@@ -44,24 +44,31 @@ const FileEntry = ({ file, setCreatingDirectory, setCreatingFile }: FileEntryPro
 
   const writeFileContents = useFileWrite()
 
-  const [getFileContents, { loading }] = useLazyQuery(GetFileContentsDocument, {
+  const [getFileContents, { loading, data, error }] = useLazyQuery(GetFileContentsDocument, {
     variables: {
       id: file.id
     },
-    onCompleted: (data) => {
-      if (!data.file) return
-      setCurrentFile({
-        contents: data.file.contents,
-        name: data.file.name,
-        editable: data.file.writable,
-        isPBASIC: data.file.isPBASIC,
-        onSave: async (contents) => {
-          await writeFileContents(file.id, contents)
-        },
-        shouldDebounce: true
-      }, data.file.id)
-    }
+    fetchPolicy: 'cache-and-network',
   })
+
+  useEffect(() => {
+    if (loading || error || data?.file === undefined || data?.file === null) return
+    setCurrentFile({
+      contents: data.file.contents,
+      name: data.file.name,
+      editable: data.file.writable,
+      isPBASIC: data.file.isPBASIC,
+      onSave: async (contents) => {
+        await writeFileContents(file.id, contents)
+      },
+      shouldDebounce: true
+    }, data.file.id)
+
+
+
+  }, [data, loading, error])
+
+
 
   const [renameFile] = useMutation(RenameFileMutation, {
     update(cache, { data }) {
