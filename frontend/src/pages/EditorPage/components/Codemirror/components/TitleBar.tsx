@@ -1,6 +1,7 @@
-import { AppBar, Avatar, CircularProgress, IconButton, Stack, Tooltip, Typography } from '@mui/material'
+import { AppBar, Avatar, Box, CircularProgress, IconButton, Stack, Tooltip, Typography } from '@mui/material'
 import { Article, Check, Code } from '@mui/icons-material'
 import { CurrentFile } from '../../../contexts/EditorContext'
+import Compiler from './Compiler'
 
 const TitleBar = ({ currentFile, loading }: { currentFile: CurrentFile, loading: boolean }) => {
 
@@ -39,6 +40,8 @@ const TitleBar = ({ currentFile, loading }: { currentFile: CurrentFile, loading:
             }
           </div>
         </Tooltip>
+        <Box flexGrow={2}></Box>
+        <Compiler/>
       </Stack>
     </AppBar>
   )

@@ -6,6 +6,7 @@ import Codemirror from "./components/Codemirror"
 import usePersistedState from "../../hooks/persistedState/usePersistedState"
 import { useEffect } from "react"
 import EditorProvider from "./contexts/EditorProvider"
+import ToastProvider from "./contexts/ToastProvider"
 
 
 
@@ -19,25 +20,27 @@ export const EditorPage = () => {
   return (
     <EditorProvider>
       <CommandsProvider>
-        <Box
-          display='flex'
-          position='absolute'
-          top={0}
-          left={0}
-          height={1}
-          width={1}
-        >
-          <Navbar />
+        <ToastProvider>
           <Box
             display='flex'
-            flexDirection='row'
+            position='absolute'
+            top={0}
+            left={0}
             height={1}
             width={1}
           >
-            <Sidebar />
-            <Codemirror />
+            <Navbar />
+            <Box
+              display='flex'
+              flexDirection='row'
+              height={1}
+              width={1}
+            >
+              <Sidebar />
+              <Codemirror />
+            </Box>
           </Box>
-        </Box>
+        </ToastProvider>
       </CommandsProvider >
     </EditorProvider >
 
