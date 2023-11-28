@@ -16,7 +16,7 @@ import { defaultKeymap, history } from "@codemirror/commands"
 import { autocompletion } from "@codemirror/autocomplete"
 import { lintGutter, lintKeymap } from "@codemirror/lint"
 import { Box, Toolbar } from '@mui/material'
-import { Ref, useEffect, useLayoutEffect, useRef, useState } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import useIsDarkMode from '../../../../hooks/useIsDarkMode'
 import useEditor from '../../hooks/useEditor'
 import TitleBar from './components/TitleBar'
@@ -53,16 +53,14 @@ const Codemirror = () => {
 
   const isDark = useIsDarkMode()
 
-  const { currentFile } = useEditor()
-
-  const [codemirrorText, setCodemirrorText] = useState<string>("")
+  const { currentFile, liveContents, setLiveContents } = useEditor()
 
   const [updateFunction, loading] = useDebounce((value: string) => {
     currentFile.onSave(value)
   }, currentFile.shouldDebounce ? 1000 : 0)
 
   useEffect(() => {
-    setCodemirrorText(currentFile.contents)
+    setLiveContents(currentFile.initialContents)
     editorRef.current?.view?.focus()
   }, [currentFile, editorRef])
 
@@ -78,9 +76,9 @@ const Codemirror = () => {
         overflow='hidden'
       >
         <ReactCodemirror
-          value={codemirrorText}
+          value={liveContents}
           onChange={(val) => {
-            setCodemirrorText(val)
+            setLiveContents(val)
             updateFunction(val)
           }}
           ref={editorRef}

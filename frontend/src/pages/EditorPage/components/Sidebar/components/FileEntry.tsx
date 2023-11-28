@@ -54,7 +54,7 @@ const FileEntry = ({ file, setCreatingDirectory, setCreatingFile }: FileEntryPro
   useEffect(() => {
     if (loading || error || data?.file === undefined || data?.file === null) return
     setCurrentFile({
-      contents: data.file.contents,
+      initialContents: data.file.contents,
       name: data.file.name,
       editable: data.file.writable,
       isPBASIC: data.file.isPBASIC,

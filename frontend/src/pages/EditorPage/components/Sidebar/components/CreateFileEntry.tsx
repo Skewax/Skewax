@@ -59,7 +59,7 @@ const CreateFileEntry = ({ parentId, open, base, setOpen, document }: CreateFile
       }
 
       setCurrentFile({
-        contents: '',
+        initialContents: '',
         name: data.createFile.name,
         editable: true,
         isPBASIC: true,
