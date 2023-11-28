@@ -3,7 +3,6 @@ package auth
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"os"
 	"skewax/db"
@@ -45,7 +44,6 @@ func (h *ExhangeHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		AuthUserID: userId,
 		Expiry:     &newSessionExpiry,
 	}
-	fmt.Println(userId)
 	h.DB.Create(&newSession)
 	h.DB.Delete(&session)
 	userToken, err := GenerateJWT(userId)
