@@ -6,10 +6,6 @@ import FileEntry from "./FileEntry"
 import { DirectoryContentsFragment, FileTree_FileFragment } from "../../../../../__generated__/graphql"
 import ContextMenu from "../../../../../components/ContextMenu"
 import { useState } from "react"
-import EntryEditor from "./EntryEditor"
-import useEditor from "../../../hooks/useEditor"
-import createDirectoryMutation from "../../../mutations/createDirectoryMutation"
-import createFileMutation from "../../../mutations/createFileMutation"
 import CreateDirectoryEntry from "./CreateDirectoryEntry"
 import CreateFileEntry from "./CreateFileEntry"
 
@@ -47,7 +43,9 @@ const FileTree = () => {
   const [creatingFile, setCreatingFile] = useState(false)
   const [creatingDirectory, setCreatingDirectory] = useState(false)
 
-  const { data } = useQuery(baseDirectoryQuery)
+  const { data } = useQuery(baseDirectoryQuery, {
+    fetchPolicy: 'cache-and-network'
+  })
 
   if (data === undefined) {
     return (

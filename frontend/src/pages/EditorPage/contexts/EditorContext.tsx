@@ -2,7 +2,7 @@ import { createContext } from "react"
 
 
 export interface CurrentFile {
-  contents: string
+  initialContents: string
   name: string
   editable: boolean
   isPBASIC: boolean
@@ -12,7 +12,10 @@ export interface CurrentFile {
 
 interface EditorContextValue {
   currentFile: CurrentFile
-  setCurrentFile: (file: CurrentFile | null) => void
+  liveContents: string
+  setLiveContents: (contents: string) => void
+  setCurrentFile: (file: CurrentFile | null, id: string | null) => void
+  currentFileID: string | null
 }
 
 const EditorContext = createContext<EditorContextValue>({} as EditorContextValue)
