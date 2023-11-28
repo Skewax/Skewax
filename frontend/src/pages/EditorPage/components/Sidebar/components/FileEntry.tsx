@@ -20,10 +20,7 @@ const GetFileContentsDocument = gql(`
   query GetFileContents($id: ID!) {
     file(id: $id) {
       id
-      name
       contents
-      isPBASIC
-      writable
     }
   }
   `)

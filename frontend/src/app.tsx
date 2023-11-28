@@ -95,7 +95,8 @@ const App = () => {
       // link: httpLink.concat(authMiddleware),
       link: ApolloLink.from([authMiddleware, errorMiddleware, httpLink]),
       cache: cache,
-
+      cache: new InMemoryCache(),
+      connectToDevTools: true,
     });
   }, [jwtData, requestToken]);
 
