@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 import HomePage from './pages/HomePage'
@@ -41,7 +42,7 @@ const httpLink = createHttpLink({
 
 const cache = new InMemoryCache()
 
-function filterObject(obj, callback) {
+function filterObject(obj: any, callback: (value: any, key: string) => boolean) {
   return Object.fromEntries(Object.entries(obj).
     filter(([key, val]) => callback(val, key)));
 }
@@ -50,7 +51,9 @@ const persistor = new CachePersistor({
   cache,
   storage: new LocalStorageWrapper(window.localStorage),
   persistenceMapper: async (data: any) => {
-    return filterO
+    return filterObject(data, (value: any) => {
+      return value.__typename !== "File"
+    })
 
   }
 })
