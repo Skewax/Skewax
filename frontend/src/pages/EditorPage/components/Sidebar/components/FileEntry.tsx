@@ -45,27 +45,21 @@ const FileEntry = ({ file, setCreatingDirectory, setCreatingFile }: FileEntryPro
     variables: {
       id: file.id
     },
-    fetchPolicy: 'cache-and-network',
+    onCompleted: (data) => {
+
+      if (loading || error || data?.file === undefined || data?.file === null) return
+      setCurrentFile({
+        initialContents: data.file.contents,
+        name: file.name,
+        editable: file.writable,
+        isPBASIC: file.isPBASIC,
+        onSave: async (contents) => {
+          await writeFileContents(file.id, contents)
+        },
+        shouldDebounce: true
+      }, data.file.id)
+    }
   })
-
-  useEffect(() => {
-    if (loading || error || data?.file === undefined || data?.file === null) return
-    setCurrentFile({
-      initialContents: data.file.contents,
-      name: data.file.name,
-      editable: data.file.writable,
-      isPBASIC: data.file.isPBASIC,
-      onSave: async (contents) => {
-        await writeFileContents(file.id, contents)
-      },
-      shouldDebounce: true
-    }, data.file.id)
-
-
-
-  }, [data, loading, error])
-
-
 
   const [renameFile] = useMutation(RenameFileMutation, {
     update(cache, { data }) {
