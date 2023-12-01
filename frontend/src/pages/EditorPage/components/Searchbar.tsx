@@ -1,7 +1,7 @@
-import { Box, Chip, Paper, TextField, useTheme } from "@mui/material"
-import { useContext, useEffect, useRef, useState } from "react"
-import { CommandsContext, shortcutModifiers } from "../../../contexts/useCommands"
+import { Box, Paper, TextField, useTheme } from "@mui/material"
+import { useCallback, useRef, useState } from "react"
 import CommandDiplay from "../../../components/CommandDisplay"
+import useKeyboardShortcut from "use-keyboard-shortcut"
 
 
 const Searchbar = () => {
@@ -11,18 +11,18 @@ const Searchbar = () => {
   const [searchTerm, setSearchTerm] = useState('')
 
   const theme = useTheme()
-
-  const { addCommand } = useContext(CommandsContext)
-
   const searchbarRef = useRef()
-
-  const focusSearchbar = () => {
+  const focusSearchbar = useCallback(() => {
     if (searchbarRef.current) {
       searchbarRef.current.focus()
     }
-  }
-  const focusSarchbarShortcut = { id: 'commandPaletteSearch', shortcut: 'k', modifiers: shortcutModifiers(['Main']), onExecution: focusSearchbar }
-  useEffect(() => { addCommand(focusSarchbarShortcut) })
+  }, [])
+
+  useKeyboardShortcut(['Meta', 'K'], () => {
+    focusSearchbar()
+  })
+
+
 
   return (
     <Box
@@ -51,7 +51,7 @@ const Searchbar = () => {
           InputProps={{
             startAdornment: <></>,
             disableUnderline: true,
-            endAdornment: <Box position='absolute' right={0} mr={1}><CommandDiplay command={focusSarchbarShortcut} /></Box>
+            endAdornment: <Box position='absolute' right={0} mr={1}><CommandDiplay command={{ modifiers: { Main: true }, shortcut: 'k' }} /></Box>
           }}
           inputProps={{ style: { textAlign: 'center' } }}
 

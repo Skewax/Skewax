@@ -1,7 +1,6 @@
 import { Box } from "@mui/material"
 import Navbar from "./components/Navbar"
 import Sidebar from "./components/Sidebar"
-import { CommandsProvider } from "../../contexts/useCommands"
 import Codemirror from "./components/Codemirror"
 import usePersistedState from "../../hooks/persistedState/usePersistedState"
 import { useEffect } from "react"
@@ -18,27 +17,25 @@ export const EditorPage = () => {
 
   return (
     <EditorProvider>
-      <CommandsProvider>
+      <Box
+        display='flex'
+        position='absolute'
+        top={0}
+        left={0}
+        height={1}
+        width={1}
+      >
+        <Navbar />
         <Box
           display='flex'
-          position='absolute'
-          top={0}
-          left={0}
+          flexDirection='row'
           height={1}
           width={1}
         >
-          <Navbar />
-          <Box
-            display='flex'
-            flexDirection='row'
-            height={1}
-            width={1}
-          >
-            <Sidebar />
-            <Codemirror />
-          </Box>
+          <Sidebar />
+          <Codemirror />
         </Box>
-      </CommandsProvider >
+      </Box>
     </EditorProvider >
 
   )

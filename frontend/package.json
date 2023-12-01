@@ -33,6 +33,7 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.13.0",
     "sort-by": "^0.0.2",
+    "use-keyboard-shortcut": "^1.1.6",
     "uuid": "^9.0.1",
     "uuidv4": "^6.2.13"
   },
