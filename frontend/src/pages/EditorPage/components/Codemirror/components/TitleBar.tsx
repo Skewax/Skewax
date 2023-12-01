@@ -41,7 +41,9 @@ const TitleBar = ({ currentFile, loading }: { currentFile: CurrentFile, loading:
           </div>
         </Tooltip>
         <Box flexGrow={2}></Box>
-        <Compiler/>
+        {currentFile.isPBASIC ?
+          <Compiler/>: null
+        }
       </Stack>
     </AppBar>
   )

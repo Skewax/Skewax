@@ -7,6 +7,8 @@ import usePersistedState from "../../hooks/persistedState/usePersistedState"
 import { useEffect } from "react"
 import EditorProvider from "./contexts/EditorProvider"
 import ToastProvider from "./contexts/ToastProvider"
+import useToast from "./hooks/useToast"
+import { Severity } from "./contexts/ToastContext"
 
 
 
