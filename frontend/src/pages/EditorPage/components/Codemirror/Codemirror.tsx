@@ -90,20 +90,25 @@ const Codemirror = () => {
           extensions={[
             lineNumbers(),
             dropCursor(),
-            autocompletion(),
             highlightActiveLine(),
             highlightActiveLineGutter(),
-            rectangularSelection(),
-            history(),
-            syntaxHighlighting(defaultHighlightStyle),
-            drawSelection(),
-            highlightSpecialChars(),
+            rectangularSelection(),drawSelection(),
             EditorState.allowMultipleSelections.of(true),
-            lintGutter(),
-            codeFolding(),
-            foldGutter(),
-            keymap.of([...defaultKeymap, ...lintKeymap, ...foldKeymap]),
-            pbasic()
+            highlightSpecialChars(),
+            history(),
+
+            ...(currentFile.isPBASIC 
+              ? [
+                syntaxHighlighting(defaultHighlightStyle),
+                lintGutter(),
+                codeFolding(),
+                autocompletion(),
+                foldGutter(),
+                keymap.of([...defaultKeymap, ...lintKeymap, ...foldKeymap]),
+                pbasic()
+              ] 
+              : []
+            )
           ]}
         />
       </Box>
