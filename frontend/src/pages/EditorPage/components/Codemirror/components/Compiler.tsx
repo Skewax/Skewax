@@ -7,33 +7,33 @@ import WorkIcon from '@mui/icons-material/ConstructionOutlined';
 import useToast from '../../../hooks/useToast';
 import { Severity } from '../../../contexts/ToastContext';
 
-const Compiler = ({onCompile}: {onCompile?: (prog: any) => void}) => {
+const Compiler = ({ onCompile }: { onCompile?: (prog: any) => void }) => {
 
-    const {liveContents} = useEditor();
-    const {sendToast} = useToast();
+  const { liveContents } = useEditor();
+  const { sendToast } = useToast();
 
-    return (
-        <Button 
-            onClick={() => {
-                const module = pbasic.compile(liveContents);
+  return (
+    <Button
+      onClick={() => {
+        const module = pbasic.compile(liveContents);
 
-                if (module.Error) {
-                    sendToast(module.Error, Severity.Error)
-                } else {
-                    sendToast("Successfully compiled!", Severity.Success)
-                }
+        if (module.Error) {
+          sendToast(module.Error, Severity.Error)
+        } else {
+          sendToast("Successfully compiled!", Severity.Success)
+        }
 
-                console.log(module)
+        console.log(module)
 
-                if (onCompile !== undefined) 
-                    onCompile(module)
-            }}
-        >
-            <Tooltip title="Compile">
-                <WorkIcon />
-            </Tooltip>
-        </Button>
-    )
+        if (onCompile !== undefined)
+          onCompile(module)
+      }}
+    >
+      <Tooltip title="Compile">
+        <WorkIcon />
+      </Tooltip>
+    </Button>
+  )
 
 };
 
