@@ -74,6 +74,7 @@ const Codemirror = () => {
         height={1}
         ref={boundRef}
         overflow='hidden'
+        flexGrow={1}
       >
         <ReactCodemirror
           value={liveContents}
@@ -92,12 +93,12 @@ const Codemirror = () => {
             dropCursor(),
             highlightActiveLine(),
             highlightActiveLineGutter(),
-            rectangularSelection(),drawSelection(),
+            rectangularSelection(), drawSelection(),
             EditorState.allowMultipleSelections.of(true),
             highlightSpecialChars(),
             history(),
 
-            ...(currentFile.isPBASIC 
+            ...(currentFile.isPBASIC
               ? [
                 syntaxHighlighting(defaultHighlightStyle),
                 lintGutter(),
@@ -106,7 +107,7 @@ const Codemirror = () => {
                 foldGutter(),
                 keymap.of([...defaultKeymap, ...lintKeymap, ...foldKeymap]),
                 pbasic()
-              ] 
+              ]
               : []
             )
           ]}

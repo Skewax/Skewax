@@ -62,7 +62,7 @@ const CreateFileEntry = ({ parentId, open, base, setOpen, document }: CreateFile
         initialContents: '',
         name: data.createFile.name,
         editable: true,
-        isPBASIC: true,
+        isPBASIC: data.createFile.isPBASIC,
         onSave: async (contents) => {
           await writeToFile(data.createFile.id, contents)
         },
