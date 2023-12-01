@@ -4,6 +4,7 @@ import FileTree from "./components/FileTree"
 import useAuth from "../../../../hooks/useAuth"
 import useEditor from "../../hooks/useEditor"
 import { Edit } from "@mui/icons-material"
+import SearchFiles from "./components/SearchFiles"
 
 const Sidebar = () => {
 
@@ -32,9 +33,7 @@ const Sidebar = () => {
       <Box height={1} display='flex' flexDirection='column'>
         <Toolbar variant='dense' />
         <Stack direction='column' justifyContent='space-between' overflow='hidden' height={1}>
-          <Box margin={1}>
-            <TextField fullWidth label='Search Files' variant='standard' size='small' />
-          </Box>
+          <SearchFiles />
           {isSignedIn &&
             <Box overflow='auto' flexGrow={3}>
               <FileTree />
@@ -42,7 +41,7 @@ const Sidebar = () => {
           }
           <Box display='flex' justifyContent='center' alignItems='end' flex-grow={1}>
             <Tooltip title='Scratchpad'>
-              <IconButton onClick={() => setCurrentFile(null)}><Edit /></IconButton>
+              <IconButton onClick={() => setCurrentFile(null, null)}><Edit /></IconButton>
             </Tooltip>
           </Box>
         </Stack>

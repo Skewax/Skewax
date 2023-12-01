@@ -51,9 +51,9 @@ const persistor = new CachePersistor({
   cache,
   storage: new LocalStorageWrapper(window.localStorage),
   persistenceMapper: async (data: any) => {
-    return filterObject(data, (value: any) => {
+    return JSON.stringify(filterObject(JSON.parse(data), (value: any) => {
       return value.__typename !== "File"
-    })
+    }))
 
   }
 })
@@ -98,7 +98,6 @@ const App = () => {
       // link: httpLink.concat(authMiddleware),
       link: ApolloLink.from([authMiddleware, errorMiddleware, httpLink]),
       cache: cache,
-      cache: new InMemoryCache(),
       connectToDevTools: true,
     });
   }, [jwtData, requestToken]);
