@@ -21,6 +21,17 @@ type File {
   contents: String!
 }
 
+input FileCreate {
+  name: String!
+  contents: String!
+  parentDirectory: ID!
+}
+
+input FileUpdate {
+  name: String
+  contents: String
+}
+
 type Directory {
   name: String!
   createdAt: DateTime!
@@ -38,13 +49,12 @@ type Query {
 }
 
 type Mutation {
-  createFile(name: String!, contents: String!): File!
-  updateFile(id: ID!, name: String!, contents: String!): File!
+  createFile(args: FileCreate!): File!
+  updateFile(id: ID!, args: FileUpdate!): File!
   deleteFile(id: ID!): File!
   createDirectory(name: String!, parentDirectory: ID!): Directory!
   deleteDirectory(id: ID!): Directory!
   renameDirectory(id: ID!, name: String!): Directory!
-  renameFile(id: ID!, name: String!): File!
   moveFile(id: ID!, directoryId: ID!): File!
   moveDirectory(id: ID!, directoryId: ID!): Directory!
 }

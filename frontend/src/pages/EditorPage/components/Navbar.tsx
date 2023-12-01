@@ -1,5 +1,5 @@
 
-import { AppBar, Avatar, Box, Button, Grid, Popover, Stack, TableRow, Toolbar, Typography } from "@mui/material"
+import { AppBar, Avatar, Box, Button, Grid, Popover, Stack, Toolbar, Typography } from "@mui/material"
 import logoDark from '../../../assets/logo-dark.svg'
 import logoLight from '../../../assets/logo-light-background.svg'
 import useIsDarkMode from "../../../hooks/useIsDarkMode"
@@ -25,7 +25,7 @@ const IconSegment = () => {
 
   const { signOut } = useAuth()
 
-  const { data: userData } = useQuery(userQuery)
+  const { data: userData } = useQuery(userQuery, { fetchPolicy: 'cache-and-network' })
 
   return (
     <PopupState variant='popover' popupId='navbar-popup'>

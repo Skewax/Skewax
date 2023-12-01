@@ -4,11 +4,18 @@ import logoLight from '../../assets/logo-light.svg'
 import demoApp from '../../assets/demo-light-LEGACY.png'
 import useIsDarkMode from "../../hooks/useIsDarkMode"
 import { useNavigate } from "react-router-dom"
+import { useEffect } from "react"
+import usePersistedState from "../../hooks/persistedState/usePersistedState"
 
 const HomePage = () => {
 
   const darkMode = useIsDarkMode()
   const navigate = useNavigate()
+
+  const [, setLastVisited] = usePersistedState("lastVisited", "/about")
+  useEffect(() => {
+    setLastVisited("/about")
+  })
 
 
   return (

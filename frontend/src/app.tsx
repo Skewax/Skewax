@@ -4,16 +4,21 @@ import HomePage from './pages/HomePage'
 import { ThemeProvider, createTheme, useMediaQuery } from '@mui/material'
 import { EditorPage } from './pages/EditorPage'
 import { SigninPage } from './pages/SigninPage'
-import { SignoutPage } from './pages/SignoutPage'
 import { ApolloClient, ApolloLink, InMemoryCache, ApolloProvider, createHttpLink } from "@apollo/client";
 import { setContext } from '@apollo/client/link/context';
 import { useMemo } from 'react'
 import useAuth from './hooks/useAuth'
 import { onError } from "@apollo/client/link/error";
+import { DefaultRedirect } from './pages/DefaultRedirect'
+import { CachePersistor, LocalStorageWrapper, persistCache } from 'apollo3-cache-persist'
 
 const router = createBrowserRouter([
   {
     path: "/",
+    element: <DefaultRedirect />
+  },
+  {
+    path: "/about",
     element: <HomePage />
   },
   {
@@ -34,6 +39,23 @@ const httpLink = createHttpLink({
 })
 
 
+const cache = new InMemoryCache()
+
+function filterObject(obj, callback) {
+  return Object.fromEntries(Object.entries(obj).
+    filter(([key, val]) => callback(val, key)));
+}
+
+const persistor = new CachePersistor({
+  cache,
+  storage: new LocalStorageWrapper(window.localStorage),
+  persistenceMapper: async (data: any) => {
+    return filterO
+
+  }
+})
+
+await persistor.restore()
 
 const App = () => {
 
@@ -46,7 +68,7 @@ const App = () => {
 
     if (jwtData == null) return new ApolloClient({
       link: httpLink,
-      cache: new InMemoryCache(),
+      cache: cache,
     });
 
     const authMiddleware = setContext((_, { headers }) => {
@@ -72,8 +94,8 @@ const App = () => {
     return new ApolloClient({
       // link: httpLink.concat(authMiddleware),
       link: ApolloLink.from([authMiddleware, errorMiddleware, httpLink]),
-      cache: new InMemoryCache(),
-
+      cache: cache,
+      connectToDevTools: true,
     });
   }, [jwtData, requestToken]);
 

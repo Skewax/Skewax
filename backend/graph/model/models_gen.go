@@ -21,6 +21,17 @@ type File struct {
 	Contents  string `json:"contents"`
 }
 
+type FileCreate struct {
+	Name            string `json:"name"`
+	Contents        string `json:"contents"`
+	ParentDirectory string `json:"parentDirectory"`
+}
+
+type FileUpdate struct {
+	Name     *string `json:"name,omitempty"`
+	Contents *string `json:"contents,omitempty"`
+}
+
 type User struct {
 	ID    string `json:"id"`
 	Name  string `json:"name"`
