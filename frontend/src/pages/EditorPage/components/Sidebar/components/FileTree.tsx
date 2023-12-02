@@ -54,9 +54,6 @@ const FileTree = () => {
       </Box>
     )
   }
-
-
-
   return (
     <ContextMenu
       height={1}

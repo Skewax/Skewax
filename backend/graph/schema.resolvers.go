@@ -111,7 +111,31 @@ func (r *mutationResolver) UpdateFile(ctx context.Context, id string, args model
 
 // DeleteFile is the resolver for the deleteFile field.
 func (r *mutationResolver) DeleteFile(ctx context.Context, id string) (*model.File, error) {
-	panic(fmt.Errorf("not implemented: DeleteFile - deleteFile"))
+	token, err := r.getUserToken(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	driveServ, err := r.Google.DriveService(token)
+
+	if err != nil {
+		return nil, err
+	}
+
+	file, err := GetFile(driveServ, id, GetPreloads(ctx))
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = driveServ.Files.Delete(id).Do()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return file, nil
 }
 
 // CreateDirectory is the resolver for the createDirectory field.
@@ -147,7 +171,31 @@ func (r *mutationResolver) CreateDirectory(ctx context.Context, name string, par
 
 // DeleteDirectory is the resolver for the deleteDirectory field.
 func (r *mutationResolver) DeleteDirectory(ctx context.Context, id string) (*model.Directory, error) {
-	panic(fmt.Errorf("not implemented: DeleteDirectory - deleteDirectory"))
+	token, err := r.getUserToken(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	driveServ, err := r.Google.DriveService(token)
+
+	if err != nil {
+		return nil, err
+	}
+
+	dir, err := GetDirectory(driveServ, id, GetPreloads(ctx))
+
+	if err != nil {
+		return nil, err
+	}
+
+	err = driveServ.Files.Delete(id).Do()
+
+	if err != nil {
+		return nil, err
+	}
+
+	return dir, nil
 }
 
 // RenameDirectory is the resolver for the renameDirectory field.
@@ -222,7 +270,6 @@ func (r *queryResolver) Me(ctx context.Context) (*model.User, error) {
 
 // BaseDirectory is the resolver for the baseDirectory field.
 func (r *queryResolver) BaseDirectory(ctx context.Context) (*model.Directory, error) {
-
 	token, err := r.getUserToken(ctx)
 	if err != nil {
 		return nil, err
