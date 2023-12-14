@@ -1,5 +1,4 @@
 
-import React from 'react';
 import useEditor from '../../../hooks/useEditor'
 import pbasic from 'pbasic-tokenizer'
 import { Button, Tooltip } from '@mui/material';

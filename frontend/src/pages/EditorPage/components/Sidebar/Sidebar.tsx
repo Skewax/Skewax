@@ -1,4 +1,4 @@
-import { Box, Drawer, Grid, IconButton, Stack, TextField, Toolbar, Tooltip } from "@mui/material"
+import { Box, Drawer, IconButton, Stack, Toolbar, Tooltip } from "@mui/material"
 import { useState } from "react"
 import FileTree from "./components/FileTree"
 import useAuth from "../../../../hooks/useAuth"
@@ -10,8 +10,8 @@ const Sidebar = () => {
 
   const { setCurrentFile } = useEditor()
   const { isSignedIn } = useAuth()
-  const [open, setOpen] = useState(isSignedIn)
-  const [width, setWidth] = useState('250px')
+  const [open,] = useState(isSignedIn)
+  const [width,] = useState('250px')
 
 
   return (

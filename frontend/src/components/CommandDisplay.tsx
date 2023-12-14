@@ -1,10 +1,16 @@
-import { Avatar, IconClassKey, Stack, Typography } from "@mui/material"
-import { Command } from "../contexts/useCommands"
-import { KeyboardCapslock, KeyboardCommandKey, KeyboardControlKey, KeyboardOptionKey } from "@mui/icons-material"
+import { Avatar, Stack, Typography } from "@mui/material"
+import { KeyboardCapslock, KeyboardCommandKey, KeyboardOptionKey } from "@mui/icons-material"
 import { OverridableComponent } from "@mui/material/OverridableComponent"
 
 interface CommandDisplayProps {
-  command: Command
+  command: {
+    modifiers: Partial<{
+      Shift: boolean
+      Main: boolean
+      Alt: boolean
+    }>
+    shortcut: string
+  }
 }
 interface KeyDisplayProps {
   Display?: OverridableComponent<any>

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import useLocalStorageKey from './useLocalStorageKey'
 import { v4 as uuidv4 } from 'uuid'
 
-const useLocalStorage = <T>(key: string, initialValue: T = null, global = false) => {
+const useLocalStorage = <T>(key: string, initialValue: T, global = false) => {
   const idRef = useRef<string>(uuidv4())
   const [read, write] = useLocalStorageKey(key, initialValue)
   const [storedValue, setStoredValue] = useState<T>(() => {
