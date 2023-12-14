@@ -6,7 +6,7 @@ import useKeyboardShortcut from "use-keyboard-shortcut"
 const SearchFiles = () => {
   const [search, setSearch] = useState<string>("")
 
-  const searchRef = useRef()
+  const searchRef = useRef<HTMLElement>()
 
 
   useKeyboardShortcut(['Meta', 'F'], () => {

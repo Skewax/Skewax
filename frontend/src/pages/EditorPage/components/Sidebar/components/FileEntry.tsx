@@ -1,5 +1,5 @@
 import { Code, Description } from "@mui/icons-material"
-import { Box, CircularProgress, ListItemButton, ListItemIcon, ListItemText } from "@mui/material"
+import { CircularProgress, ListItemButton, ListItemIcon, ListItemText } from "@mui/material"
 import { FileTree_FileFragment } from "../../../../../__generated__/graphql"
 import ContextMenu from "../../../../../components/ContextMenu"
 import { gql } from "../../../../../__generated__"
@@ -41,7 +41,7 @@ const FileEntry = ({ file, setCreatingDirectory, setCreatingFile }: FileEntryPro
 
   const writeFileContents = useFileWrite()
 
-  const [getFileContents, { loading, data, error }] = useLazyQuery(GetFileContentsDocument, {
+  const [getFileContents, { loading, error }] = useLazyQuery(GetFileContentsDocument, {
     variables: {
       id: file.id
     },

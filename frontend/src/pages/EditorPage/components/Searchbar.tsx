@@ -11,7 +11,7 @@ const Searchbar = () => {
   const [searchTerm, setSearchTerm] = useState('')
 
   const theme = useTheme()
-  const searchbarRef = useRef()
+  const searchbarRef = useRef<HTMLElement>()
   const focusSearchbar = useCallback(() => {
     if (searchbarRef.current) {
       searchbarRef.current.focus()

@@ -7,7 +7,9 @@ const useLocalStorageKey = <T>(key: string, defaultValue?: T) => {
 
   const readValue = () => {
     try {
-      return JSON.parse(localStorage.getItem(key))
+      const item = localStorage.getItem(key)
+      if (item === null) throw Error("null data error")
+      return JSON.parse(item)
     } catch (error) {
       console.error(error)
       return defaultValue

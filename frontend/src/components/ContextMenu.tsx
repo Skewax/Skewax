@@ -1,5 +1,5 @@
 import { Box, BoxProps, Menu, MenuItem } from "@mui/material"
-import { useEffect, useMemo, useState } from "react"
+import { useMemo, useState } from "react"
 
 interface ContextMenuItem {
   label: string

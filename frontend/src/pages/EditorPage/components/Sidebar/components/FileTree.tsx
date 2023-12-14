@@ -1,9 +1,9 @@
-import { useMutation, useQuery } from "@apollo/client"
+import { useQuery } from "@apollo/client"
 import { gql } from "../../../../../__generated__/gql"
 import { Box, CircularProgress, List } from "@mui/material"
 import DirectoryEntry from "./DirectoryEntry"
 import FileEntry from "./FileEntry"
-import { DirectoryContentsFragment, FileTree_FileFragment } from "../../../../../__generated__/graphql"
+import { FileTree_FileFragment } from "../../../../../__generated__/graphql"
 import ContextMenu from "../../../../../components/ContextMenu"
 import { useState } from "react"
 import CreateDirectoryEntry from "./CreateDirectoryEntry"
@@ -80,7 +80,7 @@ const FileTree = () => {
         disablePadding
       >
         {
-          data.baseDirectory.directories.map((directory: DirectoryContentsFragment) =>
+          data.baseDirectory.directories.map((directory: { name: string, id: string}) =>
             <DirectoryEntry dir={directory} key={directory.id} />
           )
         }
