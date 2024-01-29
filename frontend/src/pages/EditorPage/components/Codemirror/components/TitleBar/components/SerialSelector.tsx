@@ -11,7 +11,7 @@ const serial = (() => {
 const SerialSelector = () => {
 
   if (serial === null) {
-    return null
+    return null // add message about browser not supporting
   }
 
   return (

@@ -5,7 +5,7 @@ import DirectoryEntry from "./DirectoryEntry"
 import FileEntry from "./FileEntry"
 import { FileTree_FileFragment } from "../../../../../__generated__/graphql"
 import ContextMenu from "../../../../../components/ContextMenu"
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import CreateDirectoryEntry from "./CreateDirectoryEntry"
 import CreateFileEntry from "./CreateFileEntry"
 
@@ -39,13 +39,30 @@ query BaseDirectory {
 
 
 
-const FileTree = () => {
+const FileTree = ({ searchTerm }: { searchTerm: string }) => {
   const [creatingFile, setCreatingFile] = useState(false)
   const [creatingDirectory, setCreatingDirectory] = useState(false)
 
   const { data } = useQuery(baseDirectoryQuery, {
     fetchPolicy: 'cache-and-network'
   })
+
+  const filesList = useMemo(() => {
+    if (data === null || data === undefined) return null
+
+    return data.baseDirectory.files.filter(file =>
+      searchTerm === "" || file.name.toLowerCase().indexOf(searchTerm) !== -1
+    ).map((file: FileTree_FileFragment) =>
+      <FileEntry
+        file={file}
+        key={file.id}
+        setCreatingFile={setCreatingFile}
+        setCreatingDirectory={setCreatingDirectory}
+        parentId={data.baseDirectory.id}
+      />
+    )
+  }
+    , [data, searchTerm])
 
   if (data === undefined) {
     return (
@@ -77,21 +94,11 @@ const FileTree = () => {
         disablePadding
       >
         {
-          data.baseDirectory.directories.map((directory: { name: string, id: string}) =>
+          data.baseDirectory.directories.map((directory: { name: string, id: string }) =>
             <DirectoryEntry dir={directory} key={directory.id} />
           )
         }
-        {
-          data.baseDirectory.files.map((file: FileTree_FileFragment) =>
-            <FileEntry
-              file={file}
-              key={file.id}
-              setCreatingFile={setCreatingFile}
-              setCreatingDirectory={setCreatingDirectory}
-              parentId={data.baseDirectory.id}
-            />
-          )
-        }
+        {filesList}
         <CreateDirectoryEntry
           document={baseDirectoryQuery}
           parentId={data.baseDirectory.id}

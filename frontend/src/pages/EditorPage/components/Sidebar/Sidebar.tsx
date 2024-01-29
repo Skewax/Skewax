@@ -10,9 +10,14 @@ const Sidebar = () => {
 
   const { setCurrentFile } = useEditor()
   const { isSignedIn } = useAuth()
-  const [open,] = useState(isSignedIn)
+  const [open,] = useState<boolean>(isSignedIn)
   const [width,] = useState('250px')
 
+  const [searchTerm, setSearchTerm] = useState<string>("")
+
+  if (open === false) {
+    return null
+  }
 
   return (
     <Drawer
@@ -33,10 +38,10 @@ const Sidebar = () => {
       <Box height={1} display='flex' flexDirection='column'>
         <Toolbar variant='dense' />
         <Stack direction='column' justifyContent='space-between' overflow='hidden' height={1}>
-          <SearchFiles />
+          <SearchFiles searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
           {isSignedIn &&
             <Box overflow='auto' flexGrow={3}>
-              <FileTree />
+              <FileTree searchTerm={searchTerm} />
             </Box>
           }
           <Box display='flex' justifyContent='center' alignItems='end' flex-grow={1}>
