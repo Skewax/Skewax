@@ -45,11 +45,8 @@ const TitleBar = ({ currentFile, loading }: { currentFile: CurrentFile, loading:
           </div>
         </Tooltip>
         <Box flexGrow={2}></Box>
-        {currentFile.isPBASIC &&
-          <Stack direction='row'>
-            <SerialSelector />
-            <Compiler />
-          </Stack>
+        {currentFile.isPBASIC ?
+          <Compiler /> : null
         }
       </Stack>
     </AppBar>
