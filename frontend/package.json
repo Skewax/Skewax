@@ -22,6 +22,7 @@
     "@types/gapi": "^0.0.44",
     "@types/gapi.client.drive-v3": "^0.0.1",
     "@types/google.accounts": "^0.0.7",
+    "@types/serialport": "^8.0.5",
     "@uiw/react-codemirror": "^4.21.20",
     "apollo3-cache-persist": "^0.14.1",
     "firebase": "^10.0.0",

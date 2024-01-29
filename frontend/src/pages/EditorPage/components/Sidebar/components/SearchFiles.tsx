@@ -3,10 +3,9 @@ import { useRef, useState } from "react"
 import useKeyboardShortcut from "use-keyboard-shortcut"
 
 
-const SearchFiles = () => {
-  const [search, setSearch] = useState<string>("")
+const SearchFiles = ({ searchTerm, setSearchTerm }: { searchTerm: string, setSearchTerm: (term: string) => void }) => {
 
-  const searchRef = useRef()
+  const searchRef = useRef<HTMLElement>()
 
 
   useKeyboardShortcut(['Meta', 'F'], () => {
@@ -15,7 +14,7 @@ const SearchFiles = () => {
     }
   },
     {
-      overrideSystem: true
+      overrideSystem: false
     }
   )
 
@@ -25,7 +24,7 @@ const SearchFiles = () => {
     }
   },
     {
-      overrideSystem: true
+      overrideSystem: false
     }
   )
 
@@ -37,8 +36,8 @@ const SearchFiles = () => {
         fullWidth
         inputRef={searchRef}
         label="Search files"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
         variant='standard'
       />
     </Box>

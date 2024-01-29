@@ -2,17 +2,6 @@ import { ReactNode, useMemo, useState } from "react"
 import usePersistedState from "../../../hooks/persistedState/usePersistedState"
 import EditorContext, { CurrentFile } from "./EditorContext"
 
-const scratchpad = {
-  initialContents: "' This is your scratchpad. It only exists on this computer, but will persist between page loads.",
-  name: "Scratchpad",
-  editable: true,
-  isPBASIC: true,
-  onSave: async (contents: string) => {
-    console.log('saving scratchpad', contents)
-  },
-  shouldDebounce: false
-}
-
 const EditorProvider = ({ children }: { children: ReactNode | ReactNode[] }) => {
 
   const [scratchpad, setScratchpad] = usePersistedState("skewaxStratchpad", "' This is your scratchpad. It only exists on this computer, but will persist between page loads.")

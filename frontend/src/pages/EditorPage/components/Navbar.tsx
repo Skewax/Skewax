@@ -90,7 +90,7 @@ const Navbar = () => {
             <img style={{ height: 35 }} src={isDark ? logoDark : logoLight} />
           </Grid>
           <Grid item xs={4}>
-            <Searchbar />
+            { /*<Searchbar /> */}
           </Grid>
           <Grid item xs={2} >
             {

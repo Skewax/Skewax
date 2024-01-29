@@ -1,8 +1,8 @@
-import { AppBar, Avatar, Box, CircularProgress, IconButton, Stack, Tooltip, Typography } from '@mui/material'
+import { AppBar, Avatar, Box, CircularProgress, Stack, Tooltip, Typography } from '@mui/material'
 import { Article, Check, Code } from '@mui/icons-material'
-import { CurrentFile } from '../../../contexts/EditorContext'
 import Compiler from '../Compiler'
 import SerialSelector from './components/SerialSelector'
+import { CurrentFile } from '../../../../contexts/EditorContext'
 
 const TitleBar = ({ currentFile, loading }: { currentFile: CurrentFile, loading: boolean }) => {
 
@@ -45,11 +45,8 @@ const TitleBar = ({ currentFile, loading }: { currentFile: CurrentFile, loading:
           </div>
         </Tooltip>
         <Box flexGrow={2}></Box>
-        {currentFile.isPBASIC &&
-          <Stack direction='row'>
-            <SerialSelector />
-            <Compiler />
-          </Stack>
+        {currentFile.isPBASIC ?
+          <Compiler /> : null
         }
       </Stack>
     </AppBar>

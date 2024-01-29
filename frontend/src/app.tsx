@@ -11,7 +11,7 @@ import { useMemo } from 'react'
 import useAuth from './hooks/useAuth'
 import { onError } from "@apollo/client/link/error";
 import { DefaultRedirect } from './pages/DefaultRedirect'
-import { CachePersistor, LocalStorageWrapper, persistCache } from 'apollo3-cache-persist'
+import { CachePersistor, LocalStorageWrapper } from 'apollo3-cache-persist'
 
 const router = createBrowserRouter([
   {
@@ -58,7 +58,7 @@ const persistor = new CachePersistor({
   }
 })
 
-await persistor.restore()
+persistor.restore()
 
 const App = () => {
 

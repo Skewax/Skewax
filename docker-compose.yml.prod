@@ -1,0 +1,35 @@
+services:
+  web:
+    image: "node:20-alpine"
+    user: "node"
+    working_dir: /opt/app
+    env_file: .web.env
+    volumes:
+      - ./frontend:/opt/app
+      - ./shared:/opt/shared
+    ports:
+      - 8080:8080
+    command: "npm run build && npm run preview"
+  server:
+    image: "cosmtrek/air"
+    working_dir: /opt/app
+    ports:
+      - 8000:8000
+    env_file: .server.env
+    depends_on:
+      - db
+      # - redis
+    volumes:
+      - ./backend:/opt/app
+      - ./shared:/opt/shared
+  db:
+    image: postgres:latest
+    env_file: .db.env
+    ports:
+      - 5432:5432
+  # redis:
+  #   image: redis:alpine
+  #   env_file: .redis.env
+  #   ports:
+  #     - 6379:6379
+  
